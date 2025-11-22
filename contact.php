@@ -142,6 +142,7 @@ require_once __DIR__ . '/config/config.php';
 <body>
 
 <!-- === UNIFIED NAVBAR === -->
+<!-- UNIFIED NAVBAR -->
 <nav class="navbar navbar-expand-lg navbar-dark fixed-top" id="mainNav">
     <div class="container">
         <a class="navbar-brand" href="index.php">
@@ -172,6 +173,7 @@ require_once __DIR__ . '/config/config.php';
         </div>
     </div>
 </nav>
+
 
 <!-- HERO -->
 <div class="contact-hero">

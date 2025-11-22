@@ -188,35 +188,38 @@ body::before {
 </head>
 <body>
     <!-- Navigation Bar -->
-    <nav class="navbar navbar-expand-lg navbar-dark fixed-top" id="mainNav">
-        <div class="container">
-            <a class="navbar-brand" href="index.php">
-                <i class="fas fa-tools"></i> fixIT
-            </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto" id="navMenu">
-                    <?php if (!isLoggedIn()): ?>
-                        <li class="nav-item"><a class="nav-link" href="index.php">Home</a></li>
-                        <li class="nav-item"><a class="nav-link" href="about.php">About Us</a></li>
-                        <li class="nav-item"><a class="nav-link" href="contact.php">Contact Us</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#" onclick="openLoginModal(); return false;">Login</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#" onclick="openSignupModal(); return false;">Sign Up</a></li>
-                    <?php else: ?>
-                        <li class="nav-item"><a class="nav-link" href="index.php">Home (Map)</a></li>
-                        <li class="nav-item"><a class="nav-link" href="report.php">Report an Issue</a></li>
-                        <li class="nav-item"><a class="nav-link" href="blog.php">Make Your City Better</a></li>
-                        <li class="nav-item"><a class="nav-link" href="my-reports.php">My Reports</a></li>
-                        <li class="nav-item"><a class="nav-link" href="notifications.php">Notifications</a></li>
-                        <li class="nav-item"><a class="nav-link" href="profile.php">Profile</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#" onclick="logout(); return false;">Logout</a></li>
-                    <?php endif; ?>
-                </ul>
-            </div>
+ <!-- UNIFIED NAVBAR -->
+<nav class="navbar navbar-expand-lg navbar-dark fixed-top" id="mainNav">
+    <div class="container">
+        <a class="navbar-brand" href="index.php">
+            <i class="fas fa-tools"></i> fixIT
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto" id="navMenu">
+                <?php if (!isLoggedIn()): ?>
+                    <li class="nav-item"><a class="nav-link" href="index.php">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="about.php">About Us</a></li>
+                    <li class="nav-item"><a class="nav-link" href="contact.php">Contact Us</a></li>
+                    <li class="nav-item"><a class="nav-link" href="blog.php">Make Your City Better</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#" onclick="openLoginModal(); return false;">Login</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#" onclick="openSignupModal(); return false;">Sign Up</a></li>
+                <?php else: ?>
+                    <li class="nav-item"><a class="nav-link" href="index.php">Home (Map)</a></li>
+                    <li class="nav-item"><a class="nav-link" href="report.php">Report an Issue</a></li>
+                    <li class="nav-item"><a class="nav-link" href="blog.php">Make Your City Better</a></li>
+                    <li class="nav-item"><a class="nav-link" href="my-reports.php">My Reports</a></li>
+                    <li class="nav-item"><a class="nav-link" href="notifications.php">Notifications</a></li>
+                    <li class="nav-item"><a class="nav-link" href="profile.php">Profile</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#" onclick="logout(); return false;">Logout</a></li>
+                <?php endif; ?>
+            </ul>
         </div>
-    </nav>
+    </div>
+</nav>
+
 
     <!-- Full-Screen Map -->
     <div id="map" class="fullscreen-map"></div>
@@ -366,11 +369,33 @@ body::before {
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- Leaflet JS -->
+     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="assets/js/main.js"></script>
     <script src="assets/js/map.js"></script>
+
+<?php if (!isLoggedIn()): ?>
+<div style="
+    width: 100%;
+    text-align: center;
+    padding: 25px 15px;
+    margin-top: 20px;
+    color: #ffffff;
+    font-size: 1.25rem;
+    text-shadow: 1px 1px 4px rgba(0,0,0,0.8);
+    background: rgba(0, 0, 0, 0.6);
+    border-top: 2px solid #00ff00;
+    backdrop-filter: blur(6px);
+">
+    Want a better experience with fixIT?  
+    <a href="#" onclick="openSignupModal(); return false;" 
+       style="color: #00ff00; font-weight: bold; text-decoration: none;">
+        Sign up now!
+    </a>
+</div>
+<?php endif; ?>
+
 </body>
 </html>
+
 
