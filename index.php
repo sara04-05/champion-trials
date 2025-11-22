@@ -12,6 +12,179 @@ require_once __DIR__ . '/config/config.php';
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        /* === GLOBAL BACKGROUND (exact same as About page) === */
+body {
+    background: linear-gradient(135deg, #000000 0%, #1a1a2e 50%, #000000 100%);
+    position: relative;
+}
+
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background:
+        radial-gradient(circle at 20% 30%, rgba(0, 255, 0, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 70%, rgba(0, 0, 255, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 50% 50%, rgba(255, 0, 0, 0.08) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* === HERO SECTION (cloned from About hero) === */
+.contact-hero {
+    background: linear-gradient(135deg, rgba(0, 255, 0, 0.15) 0%, rgba(0, 0, 255, 0.15) 50%, rgba(255, 0, 0, 0.15) 100%);
+    padding: 120px 20px 100px;
+    text-align: center;
+    margin-top: 70px;
+    border-bottom: 3px solid #00ff00;
+    position: relative;
+    z-index: 1;
+}
+
+.contact-hero::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background:
+        repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(255, 255, 255, 0.03) 10px, rgba(255, 255, 255, 0.03) 20px);
+    pointer-events: none;
+}
+
+.contact-hero h1 {
+    font-size: 4.5rem;
+    font-weight: 800;
+    color: #ffffff;
+    margin-bottom: 20px;
+    text-shadow:
+        0 0 20px rgba(0, 255, 0, 0.5),
+        0 0 40px rgba(0, 0, 255, 0.3),
+        3px 3px 0px #000000;
+}
+
+.contact-hero p {
+    font-size: 1.4rem;
+    color: #ffffff;
+    max-width: 700px;
+    margin: 0 auto;
+    line-height: 1.9;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+}
+
+/* === CONTACT CONTAINER (same spacing) === */
+.contact-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 60px 20px;
+    position: relative;
+    z-index: 1;
+}
+
+/* === CONTACT CARD (IDENTICAL to About page cards) === */
+.contact-card {
+    background: rgba(0, 0, 0, 0.7);
+    border: 3px solid #ffffff;
+    border-radius: 25px;
+    padding: 50px;
+    margin-bottom: 40px;
+    box-shadow:
+        0 10px 30px rgba(0, 0, 0, 0.5),
+        0 0 20px rgba(0, 255, 0, 0.2),
+        inset 0 0 20px rgba(255, 255, 255, 0.05);
+    position: relative;
+    overflow: hidden;
+}
+
+.contact-card::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background:
+        radial-gradient(circle, rgba(0, 255, 0, 0.1) 0%, transparent 70%),
+        radial-gradient(circle, rgba(0, 0, 255, 0.1) 0%, transparent 70%),
+        radial-gradient(circle, rgba(255, 0, 0, 0.1) 0%, transparent 70%);
+    animation: rotate 20s linear infinite;
+    pointer-events: none;
+}
+
+@keyframes rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* === CONTACT TITLE (same style as About section-title) === */
+.contact-title {
+    font-size: 2.8rem;
+    font-weight: 800;
+    color: #ffffff;
+    text-align: center;
+    text-shadow:
+        2px 2px 0px #000000,
+        0 0 15px rgba(0, 255, 0, 0.4);
+    margin-bottom: 25px;
+}
+
+.section-subtitle {
+    text-align: center;
+    color: #ffffff;
+    font-size: 1.2rem;
+    margin-bottom: 40px;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
+}
+
+/* === CONTACT ITEMS (same as Feature Cards style) === */
+.contact-item {
+    margin-bottom: 25px;
+    padding: 25px;
+    background: rgba(0, 0, 0, 0.55);
+    border: 2px solid #ffffff;
+    border-radius: 18px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #ffffff;
+    transition: all 0.4s ease;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+}
+
+.contact-item i {
+    font-size: 2rem;
+    color: #00ff00;
+    text-shadow: 0 0 15px rgba(0, 255, 0, 0.8);
+}
+
+.contact-item:hover {
+    transform: translateY(-8px) scale(1.03);
+    border-color: #00ff00;
+    box-shadow:
+        0 15px 35px rgba(0, 0, 0, 0.6),
+        0 0 25px #00ff00;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+    .contact-hero h1 {
+        font-size: 2.8rem;
+    }
+    .contact-hero p {
+        font-size: 1.1rem;
+    }
+}
+
+    </style>
+    
 </head>
 <body>
     <!-- Navigation Bar -->
