@@ -19,10 +19,7 @@ $stmt = $conn->prepare("
 $stmt->bind_param("i", $_SESSION['user_id']);
 $stmt->execute();
 $result = $stmt->get_result();
-$issues = [];
-while ($row = $result->fetch_assoc()) {
-    $issues[] = $row;
-}
+$issues = $result->fetch_all(MYSQLI_ASSOC);
 $stmt->close();
 $conn->close();
 ?>
@@ -32,154 +29,196 @@ $conn->close();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Reports - fixIT</title>
+
+    <!-- Same beautiful fonts as profile & report pages -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Manrope:wght@700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="assets/css/style.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <?php include 'includes/theme-loader.php'; ?>
+
     <style>
+        :root {
+            --white: #ffffff; --offwhite: #fafafa; --lightgray: #f1f5f9; --midgray: #e2e8f0;
+            --text: #0f172a; --text-light: #475569; --green: #10b981;
+            --radius: 24px; --shadow: 0 10px 40px rgba(0,0,0,0.07); --transition: all 0.4s cubic-bezier(0.4,0,0.2,1);
+        }
         body {
-            background-color: var(--bg-primary);
-            color: var(--text-primary);
+            font-family: 'Inter', sans-serif;
+            background: var(--offwhite);
+            color: var(--text);
+            line-height: 1.8;
+            min-height: 100vh;
         }
-        
+        h1, h2, h3 { font-family: 'Manrope', sans-serif; font-weight: 800; letter-spacing: -0.5px; }
+
+        /* Hero Header */
         .page-hero {
+            background: var(--white);
+            padding: 130px 20px 80px;
             text-align: center;
-            padding: 120px 20px 60px;
-            margin-top: 70px;
-            background: var(--color-white);
-            border-bottom: 3px solid var(--primary);
+            border-bottom: 5px solid var(--green);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
         }
-        
         .page-hero h1 {
-            font-size: 3rem;
-            font-weight: 700;
-            color: var(--text-primary);
-            margin: 0;
+            font-size: 3.8rem;
+            color: var(--text);
         }
-        
         .page-hero h1 i {
-            color: var(--primary);
+            color: var(--green);
+            margin-right: 12px;
         }
-        
+        .page-hero p {
+            font-size: 1.3rem;
+            color: var(--text-light);
+            margin-top: 16px;
+        }
+
+        /* Reports Container */
         .reports-container {
-            max-width: 1200px;
-            margin: 0 auto 100px;
-            padding: 40px 20px;
+            max-width: 1100px;
+            margin: 80px auto;
+            padding: 0 20px;
         }
-        
+
+        /* Report Card */
         .report-card {
-            background: var(--color-white);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-lg);
-            padding: 30px;
-            margin-bottom: 30px;
-            box-shadow: var(--shadow-sm);
-            transition: all var(--transition-base);
+            background: var(--white);
+            border-radius: var(--radius);
+            padding: 40px;
+            margin-bottom: 40px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--midgray);
+            transition: var(--transition);
         }
-        
         .report-card:hover {
-            transform: translateY(-4px);
-            box-shadow: var(--shadow-md);
+            transform: translateY(-10px);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
         }
-        
+
         .report-title {
-            font-size: 1.6rem;
-            font-weight: 600;
-            color: var(--text-primary);
+            font-size: 1.9rem;
+            font-weight: 700;
+            color: var(--text);
             margin-bottom: 12px;
         }
-        
+
         .report-meta {
-            color: var(--text-secondary);
-            font-size: 0.95rem;
-            margin-bottom: 15px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            color: var(--text-light);
+            font-size: 0.98rem;
+            margin-bottom: 20px;
         }
-        
+        .report-meta span {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
         .report-meta i {
-            color: var(--primary);
-            margin-right: 8px;
+            color: var(--green);
         }
-        
+
+        .report-description {
+            color: var(--text-light);
+            line-height: 1.8;
+            margin-bottom: 24px;
+            font-size: 1.05rem;
+        }
+
+        .issue-status {
+            padding: 8px 20px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .issue-status.pending { background: #fef3c7; color: #92400e; }
+        .issue-status.in_progress { background: #dbeafe; color: #1e40af; }
+        .issue-status.fixed { background: #d1fae5; color: #065f46; }
+
+        .btn-primary {
+            background: var(--green);
+            border: none;
+            border-radius: 50px;
+            padding: 12px 28px;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+        .btn-primary:hover {
+            background: #0d8f63;
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(16,185,129,0.3);
+        }
+
+        /* Empty State */
         .empty-state {
             text-align: center;
-            padding: 60px 20px;
-            background: var(--color-white);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-lg);
-            margin: 50px auto;
-            max-width: 600px;
+            padding: 80px 40px;
+            background: var(--white);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            border: 1px solid var(--midgray);
+            max-width: 700px;
+            margin: 60px auto;
         }
-        
+        .empty-state i {
+            font-size: 5rem;
+            color: var(--text-light);
+            margin-bottom: 24px;
+        }
         .empty-state p {
-            font-size: 1.2rem;
-            color: var(--text-secondary);
-            margin-bottom: 30px;
-        }
-        
-        @media (max-width: 768px) {
-            .page-hero h1 {
-                font-size: 2.2rem;
-            }
-            
-            .report-card {
-                padding: 20px;
-            }
-            
-            .report-title {
-                font-size: 1.3rem;
-            }
+            font-size: 1.4rem;
+            color: var(--text-light);
+            margin-bottom: 32px;
         }
     </style>
 </head>
 <body>
+
     <?php include 'includes/navbar.php'; ?>
-    
-    <!-- Hero Title -->
-    <div class="page-hero">
-        <h1><i class="fas fa-clipboard-list"></i> My Reports</h1>
-    </div>
-    
+
+
     <div class="reports-container">
         <?php if (count($issues) > 0): ?>
             <?php foreach ($issues as $issue): ?>
                 <div class="report-card">
-                    <div class="d-flex justify-content-between align-items-start mb-4">
-                        <div style="flex: 1;">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <div>
                             <h3 class="report-title">
                                 <?= htmlspecialchars($issue['title']) ?>
                             </h3>
                             <div class="report-meta">
-                                <i class="fas fa-map-marker-alt"></i>
-                                <?= htmlspecialchars($issue['city'] . ', ' . $issue['state']) ?>
-                                &nbsp;&nbsp;|&nbsp;&nbsp;
-                                <i class="fas fa-calendar"></i>
-                                <?= date('M j, Y', strtotime($issue['reported_at'])) ?>
-                                &nbsp;&nbsp;|&nbsp;&nbsp;
-                                <i class="fas fa-tag"></i>
-                                <?= ucfirst(str_replace('_', ' ', $issue['category'])) ?>
+                                <span><i class="fas fa-map-marker-alt"></i> <?= htmlspecialchars($issue['city'] . ', ' . $issue['state']) ?></span>
+                                <span><i class="fas fa-calendar-alt"></i> <?= date('M j, Y \a\t g:i A', strtotime($issue['reported_at'])) ?></span>
+                                <span><i class="fas fa-tag"></i> <?= ucfirst(str_replace('_', ' ', $issue['category'] ?? 'uncategorized')) ?></span>
+                                <span><i class="fas fa-thumbs-up"></i> <?= $issue['upvotes'] ?? 0 ?> Upvotes</span>
                             </div>
                         </div>
-                        <span class="issue-status <?= $issue['status'] ?>">
-                            <?= ucfirst(str_replace('_', ' ', $issue['status'])) ?>
+                        <span class="issue-status <?= $issue['status'] ?? 'pending' ?>">
+                            <?= ucfirst(str_replace('_', ' ', $issue['status'] ?? 'pending')) ?>
                         </span>
                     </div>
-                    
-                    <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 20px;">
-                        <?= htmlspecialchars(substr($issue['description'], 0, 250)) ?>...
+
+                    <p class="report-description">
+                        <?= htmlspecialchars(substr($issue['description'], 0, 280)) ?>
+                        <?= strlen($issue['description']) > 280 ? '...' : '' ?>
                     </p>
-                    
+
                     <div class="d-flex justify-content-between align-items-center">
                         <a href="issue-details.php?id=<?= $issue['id'] ?>" class="btn btn-primary">
-                            View Details
+                            View Full Details
                         </a>
-                        
-                        <?php if ($issue['status'] !== 'fixed'): ?>
-                            <span style="color: var(--primary); font-weight: 600;">
-                                Estimated fix: <?= $issue['estimated_fix_days'] ?> days
+
+                        <?php if ($issue['status'] === 'fixed'): ?>
+                            <span style="color: var(--green); font-weight: 700; font-size: 1.1rem;">
+                                Issue Fixed! Thank you!
                             </span>
-                        <?php else: ?>
-                            <span style="color: var(--primary); font-weight: 600;">
-                                <i class="fas fa-check-circle"></i> Issue Fixed!
+                        <?php elseif ($issue['estimated_fix_days']): ?>
+                            <span style="color: var(--text-light); font-weight: 600;">
+                                Estimated fix in ~<?= $issue['estimated_fix_days'] ?> days
                             </span>
                         <?php endif; ?>
                     </div>
@@ -187,15 +226,18 @@ $conn->close();
             <?php endforeach; ?>
         <?php else: ?>
             <div class="empty-state">
-                <i class="fas fa-inbox" style="font-size: 4rem; color: var(--text-muted); margin-bottom: 20px;"></i>
+                <i class="fas fa-inbox"></i>
                 <p>You haven't reported any issues yet.</p>
-                <a href="report.php" class="btn btn-primary">
+                <p style="font-size: 1.1rem; color: var(--text-light); margin: 20px 0;">
+                    Be the change you want to see in your city!
+                </p>
+                <a href="report.php" class="btn btn-primary btn-lg" style="padding: 14px 36px; font-size: 1.1rem;">
                     Report Your First Issue
                 </a>
             </div>
         <?php endif; ?>
     </div>
-    
+
     <!-- Accessibility Controls -->
     <div class="accessibility-controls">
         <div class="font-size-controls">
@@ -204,7 +246,7 @@ $conn->close();
             <button id="fontSizeIncrease" aria-label="Increase Font Size">A+</button>
         </div>
     </div>
-    
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="assets/js/main.js"></script>
 </body>

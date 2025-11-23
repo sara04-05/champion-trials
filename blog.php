@@ -281,7 +281,6 @@ $isProfessional = isLoggedIn() && in_array($userRole, ['engineer', 'doctor', 'sa
     <!-- Same Hero Style -->
     <div class="blog-hero">
         <h1><i class="fas fa-blog"></i> Make Your City Better</h1>
-        <p>Share insights, ideas, and expert knowledge to improve our community</p>
         <?php if ($isProfessional): ?>
             <p style="margin-top: 10px; color: var(--green); font-weight:600;">
                 <i class="fas fa-star"></i> You're a verified professional — your posts will be highlighted

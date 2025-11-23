@@ -48,7 +48,7 @@ $lng = $_GET['lng'] ?? null;
                         <div class="form-group">
                             <label>Description</label>
                             <textarea id="issueDescription" class="form-control" rows="5" placeholder="Provide detailed information about the issue..." required></textarea>
-                            <small class="text-muted">Our system will automatically categorize your issue based on your description.</small>
+                           
                         </div>
                         
                         <div class="form-group">
