@@ -25,6 +25,7 @@ $result = $conn->query("SELECT AVG(DATEDIFF(updated_at, reported_at)) as avg_day
 $stats['avg_resolution_days'] = round($result->fetch_assoc()['avg_days'] ?? 0, 1);
 
 $filters = [
+    'category' => $_GET['category'] ?? 'all',
     'status' => $_GET['status'] ?? 'all',
     'city' => $_GET['city'] ?? ''
 ];
@@ -72,6 +73,22 @@ $conn->close();
 
         h1, h2, h3 { font-family: 'Manrope', sans-serif; font-weight: 800; letter-spacing: -0.5px; }
 
+        /* Same Hero */
+        .admin-hero {
+            background: var(--white);
+            padding: 120px 20px 80px;
+            text-align: center;
+            margin-top: 70px;
+            border-bottom: 5px solid var(--green);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        }
+
+        .admin-hero h1 {
+            font-size: 3.8rem;
+            color: var(--text);
+        }
+
+        .admin-hero h1 i { color: var(--green); margin-right: 12px; }
        
 
         .dashboard-container {
@@ -229,6 +246,10 @@ $conn->close();
 <body>
     <?php include '../includes/navbar.php'; ?>
 
+    <!-- Hero -->
+    <div class="admin-hero">
+        <h1>Admin Dashboard</h1>
+    </div>
 
 
     <div class="dashboard-container">
@@ -269,6 +290,36 @@ $conn->close();
             <div id="adminMap"></div>
         </div>
 
+        <!-- Filters -->
+        <div class="section-card">
+            <h3>Filter & Search Issues</h3>
+            <form method="GET" class="row g-3 filter-form">
+                <div class="col-md-4">
+                    <select name="category" class="form-select">
+                        <option value="all" <?php echo ($filters['category'] === 'all') ? 'selected' : ''; ?>>All Categories</option>
+                        <?php foreach (ISSUE_CATEGORIES as $key => $cat): ?>
+                            <option value="<?php echo $key; ?>" <?php echo ($filters['category'] === $key) ? 'selected' : ''; ?>>
+                                <?php echo $cat['name']; ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <select name="status" class="form-select">
+                        <option value="all" <?php echo ($filters['status'] === 'all') ? 'selected' : ''; ?>>All Status</option>
+                        <option value="pending" <?php echo ($filters['status'] === 'pending') ? 'selected' : ''; ?>>Pending</option>
+                        <option value="in_progress" <?php echo ($filters['status'] === 'in_progress') ? 'selected' : ''; ?>>In Progress</option>
+                        <option value="fixed" <?php echo ($filters['status'] === 'fixed') ? 'selected' : ''; ?>>Fixed</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <input type="text" name="city" class="form-control" placeholder="City name..." value="<?php echo htmlspecialchars($filters['city']); ?>">
+                </div>
+                <div class="col-12">
+                    <button type="submit" class="btn">Apply Filters</button>
+                </div>
+            </form>
+        </div>
        
 
         <!-- Issues Table -->
@@ -280,6 +331,7 @@ $conn->close();
                         <tr>
                             <th>ID</th>
                             <th>Title</th>
+                            <th>Category</th>
                             <th>Status</th>
                             <th>Urgency</th>
                             <th>City</th>
@@ -292,6 +344,7 @@ $conn->close();
                             <tr>
                                 <td><strong>#<?php echo $issue['id']; ?></strong></td>
                                 <td><?php echo htmlspecialchars($issue['title']); ?></td>
+                                <td><?php echo ucfirst(str_replace('_', ' ', $issue['category'])); ?></td>
                                 <td>
                                     <select class="form-select form-select-sm" onchange="updateIssueStatus(<?php echo $issue['id']; ?>, this.value)">
                                         <option value="pending" <?php echo ($issue['status'] === 'pending') ? 'selected' : ''; ?>>Pending</option>
@@ -407,4 +460,3 @@ $conn->close();
         }
     </script>
 </body>
-</html>

@@ -32,7 +32,7 @@ $lng = $_GET['lng'] ?? null;
 
     <?php include 'includes/navbar.php'; ?>
 
-  
+
 
     <div class="container mt-5 pt-5">
         <div class="row justify-content-center">
@@ -44,13 +44,15 @@ $lng = $_GET['lng'] ?? null;
                             <label>Title</label>
                             <input type="text" id="issueTitle" class="form-control" placeholder="Brief description of the issue" required>
                         </div>
-                        
+
                         <div class="form-group">
                             <label>Description</label>
                             <textarea id="issueDescription" class="form-control" rows="5" placeholder="Provide detailed information about the issue..." required></textarea>
-                           
+                           <small class="text-muted">Our system will automatically categorize your issue based on your description.</small>
+
+
                         </div>
-                        
+
                         <div class="form-group">
                             <label>Location</label>
                             <div class="row">
@@ -65,17 +67,17 @@ $lng = $_GET['lng'] ?? null;
                                 Use Current Location
                             </button>
                         </div>
-                        
+
                         <div class="form-group">
                             <label>State</label>
                             <input type="text" id="issueState" class="form-control" value="<?php echo htmlspecialchars($_SESSION['state'] ?? ''); ?>" required>
                         </div>
-                        
+
                         <div class="form-group">
                             <label>City</label>
                             <input type="text" id="issueCity" class="form-control" value="<?php echo htmlspecialchars($_SESSION['city'] ?? ''); ?>" required>
                         </div>
-                        
+
                         <div class="form-group">
                             <label>Urgency Level</label>
                             <select id="issueUrgency" class="form-control" required>
@@ -86,17 +88,21 @@ $lng = $_GET['lng'] ?? null;
                             </select>
                             <small class="text-muted">Select the urgency level of this issue</small>
                         </div>
-                        
+
                         <div class="form-group">
                             <label>Photo (Optional)</label>
                             <input type="file" id="issuePhoto" class="form-control" accept="image/*">
                             <small class="text-muted">Upload a photo of the issue</small>
                         </div>
-                        
+
                         <div id="duplicateWarning" class="alert alert-warning" style="display: none;"></div>
+
+                        <div id="categoryPreview" class="alert alert-info" style="display: none;">
+                            <strong>Detected Category:</strong> <span id="detectedCategory"></span>
+                            <br><strong>Estimated Fix Time:</strong> <span id="estimatedFixTime"></span> days
+                        </div>
                         
-                        
-                        
+
                         <button type="submit" class="btn btn-primary btn-block">Submit Report</button>
                     </form>
                 </div>
@@ -182,4 +188,3 @@ $lng = $_GET['lng'] ?? null;
         </div>
     </div>
 </body>
-</html>
