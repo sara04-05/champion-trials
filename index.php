@@ -73,7 +73,7 @@ body::before {
     color: #ffffff;
     max-width: 700px;
     margin: 0 auto;
-    line-height: 1.9;
+    line-height: 1.9;s
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
 }
 

@@ -18,10 +18,40 @@ $lng = $_GET['lng'] ?? null;
     <link rel="stylesheet" href="assets/css/style.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        body {
+            background: linear-gradient(135deg, #000000 0%, #1a1a2e 50%, #000000 100%);
+            position: relative;
+            min-height: 100vh;
+            margin: 0;
+            color: #ffffff;
+            overflow-x: hidden;
+        }
+
+        /* ONLY soft neon radial glows — NO diagonal lines, NO rotating effects */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background:
+                radial-gradient(circle at 20% 30%, rgba(0, 255, 0, 0.12) 0%, transparent 40%),
+                radial-gradient(circle at 80% 70%, rgba(0, 0, 255, 0.10) 0%, transparent 40%),
+                radial-gradient(circle at 50% 50%, rgba(255, 0, 0, 0.08) 0%, transparent 40%);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        
+    </style>
 </head>
 <body>
+
     <?php include 'includes/navbar.php'; ?>
-    
+
+  
+
     <div class="container mt-5 pt-5">
         <div class="row justify-content-center">
             <div class="col-md-8">
@@ -50,7 +80,7 @@ $lng = $_GET['lng'] ?? null;
                                 </div>
                             </div>
                             <button type="button" class="btn btn-secondary mt-2" onclick="getCurrentLocation()">
-                                <i class="fas fa-map-marker-alt"></i> Use Current Location
+                                Use Current Location
                             </button>
                         </div>
                         
@@ -83,39 +113,32 @@ $lng = $_GET['lng'] ?? null;
             </div>
         </div>
     </div>
-    
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="assets/js/main.js"></script>
     <script>
-        // Auto-categorize on description change
-        document.getElementById('issueDescription').addEventListener('input', function() {
-            checkDuplicates();
-        });
-        
-        // Check for duplicates
+        document.getElementById('issueDescription').addEventListener('input', checkDuplicates);
+
         async function checkDuplicates() {
             const lat = document.getElementById('issueLat').value;
             const lng = document.getElementById('issueLng').value;
-            
             if (lat && lng) {
                 try {
                     const response = await fetch(`api/issues.php?action=duplicates&lat=${lat}&lng=${lng}`);
                     const data = await response.json();
-                    
+                    const warning = document.getElementById('duplicateWarning');
                     if (data.success && data.duplicates.length > 0) {
-                        const warning = document.getElementById('duplicateWarning');
                         warning.style.display = 'block';
-                        warning.innerHTML = `<strong>Warning:</strong> ${data.duplicates.length} similar issue(s) found nearby. Please check if this is a duplicate.`;
+                        warning.innerHTML = `<strong>Warning:</strong> ${data.duplicates.length} similar issue(s) found nearby.`;
                     } else {
-                        document.getElementById('duplicateWarning').style.display = 'none';
+                        warning.style.display = 'none';
                     }
                 } catch (error) {
                     console.error('Error checking duplicates:', error);
                 }
             }
         }
-        
-        // Get current location
+
         function getCurrentLocation() {
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(function(position) {
@@ -124,14 +147,12 @@ $lng = $_GET['lng'] ?? null;
                     checkDuplicates();
                 });
             } else {
-                showAlert('Geolocation is not supported by your browser', 'error');
+                showAlert('Geolocation is not supported', 'error');
             }
         }
-        
-        // Handle report submission
+
         async function handleReportIssue(event) {
             event.preventDefault();
-            
             const formData = {
                 title: document.getElementById('issueTitle').value,
                 description: document.getElementById('issueDescription').value,
@@ -140,33 +161,27 @@ $lng = $_GET['lng'] ?? null;
                 state: document.getElementById('issueState').value,
                 city: document.getElementById('issueCity').value
             };
-            
+
             try {
                 const response = await fetch('api/issues.php?action=report', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(formData)
                 });
-                
                 const data = await response.json();
-                
+
                 if (data.success) {
                     showAlert('Issue reported successfully! You earned 10 points.', 'success');
-                    setTimeout(() => {
-                        window.location.href = 'index.php';
-                    }, 1500);
+                    setTimeout(() => window.location.href = 'index.php', 1500);
                 } else {
                     showAlert(data.message || 'Failed to report issue', 'error');
                 }
             } catch (error) {
                 showAlert('An error occurred. Please try again.', 'error');
-                console.error('Report error:', error);
             }
         }
     </script>
-    
+
     <!-- Accessibility Controls -->
     <div class="accessibility-controls">
         <div class="font-size-controls">
@@ -177,4 +192,3 @@ $lng = $_GET['lng'] ?? null;
     </div>
 </body>
 </html>
-
