@@ -12,14 +12,10 @@ $conn = getDBConnection();
 
 // Get user house
 $userHouse = getUserHouse($_SESSION['user_id']);
-if ($userHouse && isset(HOUSES[$userHouse])) {
-    $houseData = HOUSES[$userHouse];
-    $houseLogo = $houseData['logo'];
-} else {
-    $houseLogo = null;
-}
+$houseImage = $userHouse && !empty(HOUSES[$userHouse]['image']) ? HOUSES[$userHouse]['image'] : null;
+$houseLogo = $userHouse ? (HOUSES[$userHouse]['logo'] ?? null) : null;
 
-// Get user badges - Fixed query
+// Get user badges
 $stmt = $conn->prepare("
     SELECT b.id, b.name, b.description, b.icon 
     FROM badges b
@@ -55,12 +51,7 @@ $stats = $stmt->get_result()->fetch_assoc();
 $stmt->close();
 
 // Get points history
-$stmt = $conn->prepare("
-    SELECT * FROM points_history
-    WHERE user_id = ?
-    ORDER BY created_at DESC
-    LIMIT 10
-");
+$stmt = $conn->prepare("SELECT * FROM points_history WHERE user_id = ? ORDER BY created_at DESC LIMIT 10");
 $stmt->bind_param("i", $_SESSION['user_id']);
 $stmt->execute();
 $pointsHistory = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
@@ -115,17 +106,39 @@ $conn->close();
             margin-bottom: var(--spacing-xl);
         }
         
+        /* NEW: Beautiful Avatar with House Image */
         .profile-avatar {
-            width: 120px;
-            height: 120px;
+            width: 140px;
+            height: 140px;
             border-radius: 50%;
+            overflow: hidden;
+            margin: 0 auto 20px;
+            border: 6px solid var(--primary);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            transition: all 0.3s ease;
+        }
+        
+        .profile-avatar:hover {
+            transform: scale(1.08);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+        }
+        
+        .profile-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .profile-avatar-fallback {
+            width: 100%;
+            height: 100%;
             background: var(--primary);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 3rem;
-            color: var(--color-white);
-            margin: 0 auto 20px;
+            font-size: 4rem;
+            color: white;
+            font-weight: bold;
         }
         
         .profile-name {
@@ -149,92 +162,45 @@ $conn->close();
             font-weight: 600;
         }
         
-        .stats-grid {
+        .stats-grid, .houses-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
             gap: 20px;
-            margin-bottom: var(--spacing-lg);
+            margin: var(--spacing-lg) 0;
         }
         
-        .stat-card {
-            background: var(--bg-secondary);
-            padding: 25px;
-            border-radius: var(--radius-md);
+        .house-card {
+            padding: 30px 20px;
+            background: white;
+            border: 3px solid var(--border-color);
+            border-radius: var(--radius-lg);
             text-align: center;
-            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+            cursor: pointer;
         }
         
-        .stat-value {
-            font-size: 2.5rem;
-            color: var(--primary);
-            font-weight: 700;
-            margin-bottom: 8px;
+        .house-card:hover {
+            transform: translateY(-10px);
+            box-shadow: var(--shadow-lg);
         }
         
-        .stat-label {
-            color: var(--text-secondary);
-            font-size: 0.9rem;
-            font-weight: 600;
+        .house-card[selected], .house-card[data-house="<?php echo $userHouse; ?>"] {
+            border-color: var(--primary) !important;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            transform: translateY(-5px);
         }
         
-        .badge-item {
-            display: inline-block;
-            background: var(--bg-secondary);
-            border: 1px solid var(--border-color);
-            padding: 20px;
-            border-radius: var(--radius-md);
-            margin: 10px;
-            text-align: center;
-            transition: all var(--transition-base);
+        .house-logo img {
+            max-height: 130px;
+            max-width: 100%;
+            object-fit: contain;
+            border-radius: 15px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+            transition: transform 0.4s ease;
         }
         
-        .badge-item:hover {
-            transform: translateY(-4px);
-            box-shadow: var(--shadow-sm);
-        }
-        
-        .badge-icon {
-            font-size: 2.5rem;
-            margin-bottom: 10px;
-        }
-        
-        .badge-name {
-            color: var(--text-primary);
-            font-weight: 600;
-            margin-bottom: 5px;
-        }
-        
-        .badge-desc {
-            color: var(--text-secondary);
-            font-size: 0.85rem;
-        }
-        
-        .points-table {
-            width: 100%;
-        }
-        
-        .points-table th {
-            background: var(--bg-secondary);
-            padding: var(--spacing-md);
-            text-align: left;
-            font-weight: 600;
-            color: var(--text-primary);
-            border-bottom: 2px solid var(--border-color);
-        }
-        
-        .points-table td {
-            padding: var(--spacing-md);
-            border-bottom: 1px solid var(--border-color);
-            color: var(--text-secondary);
-        }
-        
-        .points-table tr:hover {
-            background: var(--bg-secondary);
-        }
-        
-        .points-positive {
-            color: var(--primary);
-            font-weight: 600;
+        .house-logo img:hover {
+            transform: scale(1.12);
         }
     </style>
 </head>
@@ -244,17 +210,19 @@ $conn->close();
     <div class="profile-container">
         <div class="profile-card">
             <div class="profile-header">
-                <div class="profile-avatar" style="font-size: 4rem;">
-                    <?php if ($houseLogo): ?>
-                        <?php echo $houseLogo; ?>
+                <div class="profile-avatar">
+                    <?php if ($houseImage): ?>
+                        <img src="<?php echo htmlspecialchars($houseImage); ?>" alt="House Crest">
                     <?php else: ?>
-                        <?php echo strtoupper(substr($_SESSION['name'], 0, 1) . substr($_SESSION['surname'], 0, 1)); ?>
+                        <div class="profile-avatar-fallback">
+                            <?php echo $houseLogo ?: strtoupper(substr($_SESSION['name'], 0, 1) . substr($_SESSION['surname'], 0, 1)); ?>
+                        </div>
                     <?php endif; ?>
                 </div>
                 <h1 class="profile-name"><?php echo htmlspecialchars($_SESSION['name'] . ' ' . $_SESSION['surname']); ?></h1>
                 <div class="profile-role"><?php echo ucfirst(str_replace('_', ' ', $_SESSION['role'])); ?></div>
                 <div class="profile-points">
-                    <i class="fas fa-star"></i> <?php echo $userPoints; ?> Points
+                    Star <?php echo $userPoints; ?> Points
                 </div>
             </div>
             
@@ -281,49 +249,60 @@ $conn->close();
         <!-- Pick Your House Section -->
         <div class="profile-card">
             <h2 style="color: var(--text-primary); margin-bottom: 20px; font-weight: 700;">
-                <i class="fas fa-home"></i> Pick Your House
+                Pick Your House
             </h2>
+
             <?php if ($userHouse): ?>
-                <div style="padding: 20px; background: var(--bg-secondary); border-radius: var(--radius-md); margin-bottom: 20px;">
-                    <h3 style="color: var(--text-primary); margin-bottom: 10px;">
-                        Current House: <?php echo HOUSES[$userHouse]['name']; ?> <?php echo HOUSES[$userHouse]['logo']; ?>
+                <div style="padding: 25px; background: var(--bg-secondary); border-radius: var(--radius-lg); margin-bottom: 30px; text-align: center; border: 2px solid var(--primary);">
+                    <h3 style="color: var(--text-primary); margin: 0 0 15px 0;">
+                        Current House: <strong><?php echo HOUSES[$userHouse]['name']; ?></strong>
                     </h3>
-                    <p style="color: var(--text-secondary);"><?php echo HOUSES[$userHouse]['description']; ?></p>
+                    <?php if ($houseImage): ?>
+                        <img src="<?php echo htmlspecialchars($houseImage); ?>" alt="<?php echo HOUSES[$userHouse]['name']; ?>" style="max-height: 100px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
+                    <?php else: ?>
+                        <div style="font-size: 4rem; margin: 10px 0;"><?php echo $houseLogo; ?></div>
+                    <?php endif; ?>
+                    <p style="color: var(--text-secondary); margin-top: 15px;"><?php echo HOUSES[$userHouse]['description']; ?></p>
                 </div>
             <?php endif; ?>
-            <div class="houses-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;">
+
+            <div class="houses-grid">
                 <?php foreach (HOUSES as $houseKey => $houseInfo): ?>
-                    <div class="house-card" 
+                    <div class="house-card <?php echo ($userHouse === $houseKey) ? 'selected' : ''; ?>" 
                          data-house="<?php echo $houseKey; ?>"
-                         style="padding: 25px; background: var(--color-white); border: 2px solid var(--border-color); border-radius: var(--radius-lg); text-align: center; cursor: pointer; transition: all var(--transition-base); <?php echo ($userHouse === $houseKey) ? 'border-color: var(--primary); box-shadow: var(--shadow-md);' : ''; ?>">
-                        <div class="house-logo" style="font-size: 4rem; margin-bottom: 15px;">
-                            <?php echo $houseInfo['logo']; ?>
+                         onclick="selectHouse('<?php echo $houseKey; ?>')">
+                        <div class="house-logo">
+                            <?php if (!empty($houseInfo['image'])): ?>
+                                <img src="<?php echo htmlspecialchars($houseInfo['image']); ?>" 
+                                     alt="<?php echo $houseInfo['name']; ?> Crest">
+                            <?php else: ?>
+                                <div style="font-size: 5rem;"><?php echo $houseInfo['logo']; ?></div>
+                            <?php endif; ?>
                         </div>
-                        <h3 style="color: var(--text-primary); margin-bottom: 10px; font-weight: 700;">
+                        <h3 style="margin: 15px 0 8px; font-weight: 700; color: var(--text-primary);">
                             <?php echo $houseInfo['name']; ?>
                         </h3>
-                        <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 15px;">
+                        <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 15px;">
                             <?php echo $houseInfo['description']; ?>
                         </p>
-                        <div style="display: flex; gap: 8px; justify-content: center; margin-top: 15px;">
+                        <div style="display: flex; gap: 8px; justify-content: center; margin: 15px 0;">
                             <?php foreach ($houseInfo['colors'] as $color): ?>
-                                <div style="width: 30px; height: 30px; background: <?php echo $color; ?>; border-radius: 50%; border: 2px solid var(--border-color);"></div>
+                                <div style="width: 32px; height: 32px; background: <?php echo $color; ?>; border-radius: 50%; border: 3px solid #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.2);"></div>
                             <?php endforeach; ?>
                         </div>
                         <?php if ($userHouse === $houseKey): ?>
-                            <div style="margin-top: 15px; color: var(--primary); font-weight: 600;">
-                                <i class="fas fa-check-circle"></i> Selected
+                            <div style="color: var(--primary); font-weight: 700; font-size: 1.1rem;">
+                                Selected
                             </div>
                         <?php else: ?>
-                            <button class="btn btn-primary btn-sm mt-3" onclick="selectHouse('<?php echo $houseKey; ?>')">
-                                Select House
-                            </button>
+                            <button class="btn btn-primary btn-sm">Select House</button>
                         <?php endif; ?>
                     </div>
                 <?php endforeach; ?>
             </div>
         </div>
-        
+
+        <!-- Badges & Points History (unchanged) -->
         <div class="profile-card">
             <h2 style="color: var(--text-primary); margin-bottom: 20px; font-weight: 700;">My Badges</h2>
             <?php if (count($badges) > 0): ?>
@@ -337,7 +316,7 @@ $conn->close();
                     <?php endforeach; ?>
                 </div>
             <?php else: ?>
-                <p style="color: var(--text-secondary);">No badges earned yet. Keep contributing to earn badges!</p>
+                <p style="color: var(--text-secondary);">No badges earned yet. Keep contributing!</p>
             <?php endif; ?>
         </div>
         
@@ -346,11 +325,7 @@ $conn->close();
             <?php if (count($pointsHistory) > 0): ?>
                 <table class="points-table">
                     <thead>
-                        <tr>
-                            <th>Points</th>
-                            <th>Reason</th>
-                            <th>Date</th>
-                        </tr>
+                        <tr><th>Points</th><th>Reason</th><th>Date</th></tr>
                     </thead>
                     <tbody>
                         <?php foreach ($pointsHistory as $history): ?>
@@ -367,16 +342,7 @@ $conn->close();
             <?php endif; ?>
         </div>
     </div>
-    
-    <!-- Accessibility Controls -->
-    <div class="accessibility-controls">
-        <div class="font-size-controls">
-            <button id="fontSizeDecrease" aria-label="Decrease Font Size">A-</button>
-            <button id="fontSizeReset" aria-label="Reset Font Size">A</button>
-            <button id="fontSizeIncrease" aria-label="Increase Font Size">A+</button>
-        </div>
-    </div>
-    
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="assets/js/main.js"></script>
     <script>
@@ -384,9 +350,7 @@ $conn->close();
             try {
                 const response = await fetch('api/houses.php?action=select', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ house: house })
                 });
                 
@@ -394,15 +358,12 @@ $conn->close();
                 
                 if (data.success) {
                     showAlert('House selected successfully! Theme updated.', 'success');
-                    setTimeout(() => {
-                        window.location.reload();
-                    }, 1000);
+                    setTimeout(() => location.reload(), 1200);
                 } else {
                     showAlert(data.message || 'Failed to select house', 'error');
                 }
             } catch (error) {
-                showAlert('An error occurred. Please try again.', 'error');
-                console.error('Select house error:', error);
+                showAlert('Error. Try again.', 'error');
             }
         }
     </script>

@@ -33,7 +33,6 @@ if (isLoggedIn() && isset($_SESSION['house_logo'])) {
     <div class="container">
         <a class="navbar-brand" href="<?php echo getNavPath('index.php'); ?>">
             <?php if ($houseLogo): ?>
-                <span style="font-size: 1.5rem; margin-right: 8px;"><?php echo $houseLogo; ?></span>
             <?php endif; ?>
             <i class="fas fa-tools"></i> fixIT
         </a>
