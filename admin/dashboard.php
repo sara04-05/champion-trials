@@ -174,16 +174,16 @@ $conn->close();
                     
                     <?php if (isAdmin()): ?>
                         <!-- Admin-specific links -->
-                        <li class="nav-item"><a class="nav-link" href="admin_dashboard.php">Dashboard</a></li>
-                        <li class="nav-item"><a class="nav-link" href="manage_issues.php">Manage Issues</a></li>
-                        <li class="nav-item"><a class="nav-link" href="manage_users.php">Manage Users</a></li>
-                        <li class="nav-item"><a class="nav-link" href="analytics.php">Analytics</a></li>
+                        <li class="nav-item"><a class="nav-link" href="../admin_dashboard.php">Dashboard</a></li>
+                        <li class="nav-item"><a class="nav-link" href="../manage_issues.php">Manage Issues</a></li>
+                        <li class="nav-item"><a class="nav-link" href="../manage_users.php">Manage Users</a></li>
+                        <li class="nav-item"><a class="nav-link" href="../analytics.php">Analytics</a></li>
                     <?php endif; ?>
 
                     <!-- User Profile link -->
                     <li class="nav-item"><a class="nav-link" href="profile.php">Profile</a></li>
                     <!-- Logout -->
-                    <li class="nav-item"><a class="nav-link" href="../logout.php">Logout</a></li>
+                    <li class="nav-item"><a class="nav-link" href="logout.php">Logout</a></li>
                 </ul>
             </div>
         </div>
