@@ -117,46 +117,7 @@ A comprehensive PHP-based web application for reporting and managing local city 
 - **Password**: admin123
 - **Email**: admin@citycare.com
 
-**⚠️ Important**: Change the default admin password after first login!
 
-## Project Structure
-
-```
-champion-trials/
-├── admin/
-│   └── dashboard.php          # Admin dashboard
-├── api/
-│   ├── auth.php               # Authentication API
-│   ├── issues.php             # Issues API
-│   └── blog.php               # Blog API
-├── assets/
-│   ├── css/
-│   │   └── style.css          # Main stylesheet
-│   └── js/
-│       ├── main.js            # Main JavaScript
-│       └── map.js             # Map functionality
-├── config/
-│   ├── config.php             # Application configuration
-│   └── database.php           # Database connection
-├── database/
-│   └── schema.sql             # Database schema
-├── includes/
-│   ├── auth.php               # Authentication functions
-│   ├── issues.php             # Issue management functions
-│   ├── blog.php               # Blog functions
-│   └── navbar.php             # Navigation bar component
-├── uploads/                   # Uploaded files (created automatically)
-│   ├── issues/                # Issue photos
-│   └── blog/                  # Blog images
-├── index.php                  # Landing page
-├── report.php                 # Report issue page
-├── blog.php                   # Blog listing page
-├── profile.php                # User profile
-├── my-reports.php             # User's reported issues
-├── notifications.php          # Notifications page
-├── issue-details.php          # Issue details page
-└── README.md                  # This file
-```
 
 ## API Endpoints
 
@@ -200,42 +161,6 @@ The system automatically categorizes issues based on keywords in the description
 - Environmental: 3 days
 - Safety: 2 days
 
-### Duplicate Detection
-Warns users if a new report is within 100 meters of an existing report.
-
-## Technologies Used
-
-- **Backend**: PHP 7.4+
-- **Database**: MySQL
-- **Frontend**: HTML5, CSS3, JavaScript (ES6+)
-- **Maps**: Google Maps JavaScript API
-- **Charts**: Chart.js
-- **UI Framework**: Bootstrap 5
-- **Icons**: Font Awesome 6
-
-## Browser Support
-
-- Chrome (latest)
-- Firefox (latest)
-- Safari (latest)
-- Edge (latest)
-
-## Security Features
-
-- Password hashing (bcrypt)
-- SQL injection prevention (prepared statements)
-- XSS protection (htmlspecialchars)
-- Session management
-- Role-based access control
-- File upload validation
-
-## Contributing
-
-This is a project for learning and demonstration purposes. Feel free to fork and modify as needed.
-
-## License
-
-This project is open source and available for educational purposes.
 
 ## Support
 
