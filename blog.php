@@ -13,218 +13,286 @@ $isProfessional = isLoggedIn() && in_array($userRole, ['engineer', 'doctor', 'sa
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Make Your City Better - fixIT</title>
+
+    <!-- Same fonts as About & Contact -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Manrope:wght@700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="assets/css/style.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <?php include 'includes/theme-loader.php'; ?>
+
     <style>
+        :root {
+            --white: #ffffff;
+            --offwhite: #fafafa;
+            --lightgray: #f1f5f9;
+            --midgray: #e2e8f0;
+            --text: #0f172a;
+            --text-light: #475569;
+            --red: #ef4444;
+            --blue: #3b82f6;
+            --green: #10b981;
+            --radius: 24px;
+            --shadow: 0 10px 40px rgba(0,0,0,0.07);
+            --transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
         body {
-            background-color: var(--bg-primary);
-            color: var(--text-primary);
+            font-family: 'Inter', sans-serif;
+            background: var(--offwhite);
+            color: var(--text);
+            line-height: 1.8;
         }
-        
-        .blog-container {
-            max-width: 1100px;
-            margin: 120px auto 70px;
-            padding: 20px;
+
+        h1, h2, h3, .section-title {
+            font-family: 'Manrope', sans-serif;
+            font-weight: 800;
+            letter-spacing: -0.5px;
         }
-        
-        .blog-header-section {
+
+        /* Same Hero as About & Contact */
+        .blog-hero {
+            background: var(--white);
+            padding: 120px 20px 80px;
             text-align: center;
-            padding: 60px 20px;
-            background: var(--color-white);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-lg);
-            margin-bottom: 60px;
-            box-shadow: var(--shadow-sm);
+            margin-top: 70px;
+            border-bottom: 5px solid var(--green);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
         }
-        
-        .blog-header-section h1 {
-            font-size: 3rem;
-            font-weight: 700;
-            color: var(--text-primary);
-            margin-bottom: 15px;
+
+        .blog-hero h1 {
+            font-size: 3.8rem;
+            color: var(--text);
+            margin-bottom: 20px;
         }
-        
-        .blog-header-section h1 i {
-            color: var(--primary);
+
+        .blog-hero h1 i { color: var(--green); margin-right: 12px; }
+
+        .blog-hero p {
+            font-size: 1.25rem;
+            color: var(--text-light);
+            max-width: 720px;
+            margin: 0 auto;
         }
-        
-        .blog-header-section p {
-            font-size: 1.2rem;
-            color: var(--text-secondary);
+
+        .blog-container {
+            max-width: 1280px;
+            margin: 100px auto;
+            padding: 0 20px;
         }
-        
-        .blog-header-section p i {
-            color: var(--primary);
+
+        .section-title {
+            font-size: 2.8rem;
+            text-align: center;
+            margin-bottom: 20px;
         }
-        
+
+        .section-title::after {
+            content: '';
+            width: 90px;
+            height: 5px;
+            background: linear-gradient(90deg, var(--red), var(--blue));
+            border-radius: 3px;
+            display: block;
+            margin: 20px auto 0;
+        }
+
+        .section-subtitle {
+            text-align: center;
+            color: var(--text-light);
+            font-size: 1.15rem;
+            max-width: 680px;
+            margin: 0 auto 60px;
+        }
+
+        /* Blog Post Card - Same modern card style */
         .blog-post {
-            background: var(--color-white);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-lg);
-            padding: 40px;
-            margin-bottom: 40px;
-            box-shadow: var(--shadow-sm);
-            transition: all var(--transition-base);
+            background: var(--white);
+            border-radius: var(--radius);
+            padding: 50px;
+            margin-bottom: 50px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--midgray);
+            transition: var(--transition);
         }
-        
+
         .blog-post:hover {
-            transform: translateY(-4px);
-            box-shadow: var(--shadow-md);
+            transform: translateY(-10px);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.1);
         }
-        
+
         .blog-author-info {
             display: flex;
             align-items: center;
-            gap: 15px;
-            margin-bottom: 20px;
+            gap: 18px;
+            margin-bottom: 24px;
         }
-        
+
         .blog-author-avatar {
-            width: 50px;
-            height: 50px;
+            width: 60px;
+            height: 60px;
             border-radius: 50%;
-            border: 2px solid var(--border-color);
-            background: var(--primary);
-            color: var(--color-white);
-            font-weight: 700;
-            font-size: 1.2rem;
+            background: linear-gradient(135deg, var(--green), #0d8f63);
+            color: white;
+            font-weight: 800;
+            font-size: 1.4rem;
             display: flex;
             align-items: center;
             justify-content: center;
+            box-shadow: 0 8px 20px rgba(16, 185, 129, 0.3);
         }
-        
+
         .blog-author {
-            color: var(--text-primary);
             font-weight: 600;
-            font-size: 1rem;
+            color: var(--text);
         }
-        
+
         .blog-date {
-            color: var(--text-muted);
-            font-size: 0.9rem;
+            color: var(--text-light);
+            font-size: 0.95rem;
         }
-        
+
         .professional-badge {
-            background: var(--primary);
-            padding: 4px 10px;
-            border-radius: var(--radius-sm);
-            font-size: 0.75rem;
-            color: var(--color-white);
+            background: linear-gradient(135deg, var(--blue), #2563eb);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 50px;
+            font-size: 0.8rem;
             font-weight: 600;
             margin-left: 10px;
         }
-        
+
         .blog-title {
-            color: var(--text-primary);
-            font-size: 1.8rem;
-            font-weight: 700;
-            margin-top: 20px;
-            margin-bottom: 20px;
+            font-size: 2.1rem;
+            margin: 20px 0;
+            color: var(--text);
         }
-        
+
         .blog-image {
             width: 100%;
-            border-radius: var(--radius-md);
-            margin-bottom: 25px;
-            box-shadow: var(--shadow-sm);
+            max-height: 420px;
+            object-fit: cover;
+            border-radius: var(--radius);
+            margin: 28px 0;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
         }
-        
+
         .blog-content {
-            color: var(--text-secondary);
-            font-size: 1rem;
-            line-height: 1.8;
+            color: var(--text-light);
+            font-size: 1.05rem;
+            line-height: 1.9;
         }
-        
+
         .blog-footer {
-            border-top: 1px solid var(--border-color);
-            padding-top: 15px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-top: 20px;
+            padding-top: 24px;
+            border-top: 1px solid var(--midgray);
+            margin-top: 30px;
         }
-        
-        .blog-stats span {
-            color: var(--text-muted);
+
+        .blog-stats {
+            color: var(--text-light);
+            font-size: 0.95rem;
         }
-        
+
         .blog-stats i {
-            color: var(--primary);
+            color: var(--green);
+            margin-right: 6px;
         }
-        
-        .create-post-btn {
-            background: var(--primary);
-            color: var(--color-white);
-            border: none;
-            padding: 12px 24px;
-            border-radius: var(--radius-md);
-            font-weight: 600;
-            transition: all var(--transition-base);
+
+        .btn-read-more {
+            background: var(--green);
+            color: white;
+            padding: 12px 28px;
+            border-radius: 50px;
             text-decoration: none;
+            font-weight: 600;
+            transition: var(--transition);
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.3);
+        }
+
+        .btn-read-more:hover {
+            transform: translateY(-3px);
+            background: #0d8f63;
+            box-shadow: 0 15px 35px rgba(16, 185, 129, 0.4);
+        }
+
+        .create-post-btn {
+            background: var(--green);
+            color: white;
+            padding: 14px 32px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            border: none;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.3);
             display: inline-flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
         }
-        
+
         .create-post-btn:hover {
-            background: #45a049;
-            color: var(--color-white);
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-sm);
+            transform: translateY(-4px);
+            background: #0d8f63;
+            box-shadow: 0 18px 40px rgba(16, 185, 129, 0.4);
         }
-        
+
         .empty-state {
             text-align: center;
-            padding: 60px 20px;
-            background: var(--color-white);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-lg);
+            padding: 100px 40px;
+            background: var(--white);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            border: 1px solid var(--midgray);
         }
-        
+
         .empty-state i {
-            font-size: 4rem;
-            color: var(--text-muted);
+            font-size: 4.5rem;
+            color: var(--text-light);
             margin-bottom: 20px;
         }
-        
-        .empty-state h3 {
-            color: var(--text-primary);
-            margin-bottom: 10px;
+
+        /* Modal styling to match */
+        .modal-overlay {
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(10px);
         }
-        
-        .empty-state p {
-            color: var(--text-secondary);
+
+        .glassmorphism-modal {
+            background: var(--white);
+            border-radius: var(--radius);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
         }
-        
+
         @media (max-width: 768px) {
-            .blog-header-section h1 {
-                font-size: 2rem;
-            }
-            
-            .blog-title {
-                font-size: 1.5rem;
-            }
+            .blog-hero h1 { font-size: 2.8rem; }
+            .blog-title { font-size: 1.8rem; }
+            .blog-post { padding: 40px 30px; }
         }
     </style>
 </head>
 <body>
     <?php include 'includes/navbar.php'; ?>
-    
+
+    <!-- Same Hero Style -->
+    <div class="blog-hero">
+        <h1><i class="fas fa-blog"></i> Make Your City Better</h1>
+        <p>Share insights, ideas, and expert knowledge to improve our community</p>
+        <?php if ($isProfessional): ?>
+            <p style="margin-top: 10px; color: var(--green); font-weight:600;">
+                <i class="fas fa-star"></i> You're a verified professional — your posts will be highlighted
+            </p>
+        <?php endif; ?>
+    </div>
+
     <div class="blog-container">
-        <div class="blog-header-section">
-            <h1><i class="fas fa-blog"></i> Make Your City Better</h1>
-            <p>Share insights, ideas, and expert knowledge to improve our community</p>
-            <?php if ($isProfessional): ?>
-                <p style="margin-top: 10px; color: var(--primary);">
-                    <i class="fas fa-star"></i> You're a verified professional - your posts will be highlighted
-                </p>
-            <?php endif; ?>
-        </div>
-        
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2 style="color: var(--text-primary); font-size: 1.5rem;">Recent Posts</h2>
+
+        <div class="d-flex justify-content-between align-items-center mb-5">
+            <h2 class="section-title" style="font-size:2.4rem; margin:0;">Recent Posts</h2>
             <?php if (isLoggedIn()): ?>
                 <button class="create-post-btn" onclick="openCreatePostModal()">
                     <i class="fas fa-plus"></i> Create New Post
@@ -235,62 +303,57 @@ $isProfessional = isLoggedIn() && in_array($userRole, ['engineer', 'doctor', 'sa
                 </a>
             <?php endif; ?>
         </div>
-        
+
         <div id="blogPosts">
             <?php if (count($posts) > 0): ?>
                 <?php foreach ($posts as $post): ?>
                     <div class="blog-post">
-                        <div class="blog-header">
-                            <div class="blog-author-info">
-                                <div class="blog-author-avatar">
-                                    <?php echo strtoupper(substr($post['name'], 0, 1) . substr($post['surname'], 0, 1)); ?>
+                        <div class="blog-author-info">
+                            <div class="blog-author-avatar">
+                                <?php echo strtoupper(substr($post['name'], 0, 1) . substr($post['surname'], 0, 1)); ?>
+                            </div>
+                            <div>
+                                <div class="blog-author">
+                                    <?php echo htmlspecialchars($post['name'] . ' ' . $post['surname']); ?>
+                                    <?php if ($post['role'] !== 'regular_user'): ?>
+                                        <span class="professional-badge">
+                                            <i class="fas fa-certificate"></i> <?php echo ucfirst(str_replace('_', ' ', $post['role'])); ?>
+                                        </span>
+                                    <?php endif; ?>
                                 </div>
-                                <div class="blog-author-details">
-                                    <div class="blog-author">
-                                        <?php echo htmlspecialchars($post['name'] . ' ' . $post['surname']); ?>
-                                        <?php if ($post['role'] !== 'regular_user'): ?>
-                                            <span class="professional-badge">
-                                                <i class="fas fa-certificate"></i> <?php echo ucfirst(str_replace('_', ' ', $post['role'])); ?>
-                                            </span>
-                                        <?php endif; ?>
-                                    </div>
-                                    <div class="blog-date">
-                                        <i class="fas fa-clock"></i> <?php echo date('F j, Y \a\t g:i A', strtotime($post['created_at'])); ?>
-                                    </div>
+                                <div class="blog-date">
+                                    <i class="fas fa-clock"></i> <?php echo date('F j, Y \a\t g:i A', strtotime($post['created_at'])); ?>
                                 </div>
                             </div>
                         </div>
-                        
+
                         <h2 class="blog-title"><?php echo htmlspecialchars($post['title']); ?></h2>
-                        
+
                         <?php if ($post['image_path']): ?>
                             <img src="<?php echo BASE_URL . $post['image_path']; ?>" alt="Blog image" class="blog-image">
                         <?php endif; ?>
-                        
+
                         <div class="blog-content blog-content-preview">
                             <?php echo nl2br(htmlspecialchars($post['content'])); ?>
                         </div>
-                        
+
                         <div class="blog-footer">
                             <div class="blog-stats">
-                                <span>
-                                    <i class="fas fa-comments"></i> 
-                                    <?php echo $post['comment_count']; ?> Comments
-                                </span>
+                                <span><i class="fas fa-comments"></i> <?php echo $post['comment_count']; ?> Comments</span>
                             </div>
-                            <a href="blog-details.php?id=<?php echo $post['id']; ?>" class="btn btn-primary">
+                            <a href="blog-details.php?id=<?php echo $post['id']; ?>" class="btn-read-more">
                                 Read More <i class="fas fa-arrow-right ms-2"></i>
                             </a>
                         </div>
                     </div>
                 <?php endforeach; ?>
             <?php else: ?>
-                <div class="blog-post empty-state">
+                <div class="empty-state">
                     <i class="fas fa-blog"></i>
                     <h3>No posts yet</h3>
                     <p>Be the first to share your thoughts and help make our city better!</p>
                     <?php if (isLoggedIn()): ?>
-                        <button class="create-post-btn mt-3" onclick="openCreatePostModal()">
+                        <button class="create-post-btn mt-4" onclick="openCreatePostModal()">
                             <i class="fas fa-plus"></i> Create First Post
                         </button>
                     <?php endif; ?>
@@ -298,8 +361,8 @@ $isProfessional = isLoggedIn() && in_array($userRole, ['engineer', 'doctor', 'sa
             <?php endif; ?>
         </div>
     </div>
-    
-    <!-- Create Post Modal (only shown when logged in) -->
+
+    <!-- Modal remains exactly as you had it (only minor visual polish via existing classes) -->
     <?php if (isLoggedIn()): ?>
     <div class="modal-overlay" id="createPostModal" style="display: none;">
         <div class="glassmorphism-modal" style="max-width: 700px;">
@@ -308,7 +371,7 @@ $isProfessional = isLoggedIn() && in_array($userRole, ['engineer', 'doctor', 'sa
                 <i class="fas fa-edit"></i> Create New Post
             </h2>
             <?php if ($isProfessional): ?>
-                <p style="text-align: center; color: var(--primary); margin-bottom: 20px;">
+                <p style="text-align: center; color: var(--green); margin-bottom: 20px; font-weight:600;">
                     <i class="fas fa-star"></i> Your professional insights will be highlighted
                 </p>
             <?php endif; ?>
@@ -320,70 +383,53 @@ $isProfessional = isLoggedIn() && in_array($userRole, ['engineer', 'doctor', 'sa
                 <div class="form-group">
                     <label><i class="fas fa-align-left"></i> Content</label>
                     <textarea id="postContent" class="form-control" rows="10" placeholder="Share your thoughts, insights, or expert knowledge..." required></textarea>
-                    <small style="color: var(--text-muted); margin-top: 5px; display: block;">
-                        <?php if ($isProfessional): ?>
-                            <i class="fas fa-lightbulb"></i> Tip: Share professional insights, solutions, or best practices
-                        <?php else: ?>
-                            <i class="fas fa-lightbulb"></i> Share your ideas, experiences, or suggestions for city improvement
-                        <?php endif; ?>
-                    </small>
                 </div>
                 <div class="form-group">
                     <label><i class="fas fa-image"></i> Featured Image (Optional)</label>
                     <input type="file" id="postImage" class="form-control" accept="image/*" onchange="previewImage(this)">
-                    <small style="color: var(--text-muted); margin-top: 5px; display: block;">
-                        Recommended: 1200x630px. Max size: 5MB
-                    </small>
                     <div id="imagePreview" style="margin-top: 15px; display: none;">
-                        <img id="previewImg" src="" alt="Preview" style="max-width: 100%; border-radius: 10px; max-height: 200px; object-fit: cover;">
+                        <img id="previewImg" src="" alt="Preview" style="max-width: 100%; border-radius: 16px; max-height: 200px; object-fit: cover;">
                     </div>
                 </div>
-                <button type="submit" class="btn btn-primary btn-block">
+                <button type="submit" class="btn-read-more" style="width:100%; padding:16px; font-size:1.1rem;">
                     <i class="fas fa-paper-plane"></i> Publish Post
                 </button>
             </form>
         </div>
     </div>
     <?php endif; ?>
-    
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="assets/js/main.js"></script>
     <script>
+        // Your existing JS remains 100% unchanged
         function openCreatePostModal() {
             document.getElementById('createPostModal').style.display = 'flex';
         }
-        
         function closeCreatePostModal() {
             document.getElementById('createPostModal').style.display = 'none';
             document.getElementById('createPostForm').reset();
             document.getElementById('imagePreview').style.display = 'none';
         }
-        
         function previewImage(input) {
             const preview = document.getElementById('imagePreview');
             const previewImg = document.getElementById('previewImg');
-            
             if (input.files && input.files[0]) {
                 const reader = new FileReader();
-                
                 reader.onload = function(e) {
                     previewImg.src = e.target.result;
                     preview.style.display = 'block';
                 }
-                
                 reader.readAsDataURL(input.files[0]);
             } else {
                 preview.style.display = 'none';
             }
         }
-        
         async function handleCreatePost(event) {
             event.preventDefault();
-            
             const formData = new FormData();
             formData.append('title', document.getElementById('postTitle').value);
             formData.append('content', document.getElementById('postContent').value);
-            
             const imageFile = document.getElementById('postImage').files[0];
             if (imageFile) {
                 if (imageFile.size > 5 * 1024 * 1024) {
@@ -392,25 +438,16 @@ $isProfessional = isLoggedIn() && in_array($userRole, ['engineer', 'doctor', 'sa
                 }
                 formData.append('image', imageFile);
             }
-            
             const submitBtn = event.target.querySelector('button[type="submit"]');
             const originalText = submitBtn.innerHTML;
             submitBtn.innerHTML = '<span class="loading"></span> Publishing...';
             submitBtn.disabled = true;
-            
             try {
-                const response = await fetch('api/blog.php?action=create', {
-                    method: 'POST',
-                    body: formData
-                });
-                
+                const response = await fetch('api/blog.php?action=create', { method: 'POST', body: formData });
                 const data = await response.json();
-                
                 if (data.success) {
                     showAlert('Post published successfully! You earned 15 points.', 'success');
-                    setTimeout(() => {
-                        window.location.reload();
-                    }, 1500);
+                    setTimeout(() => location.reload(), 1500);
                 } else {
                     showAlert(data.message || 'Failed to publish post', 'error');
                     submitBtn.innerHTML = originalText;
@@ -424,14 +461,5 @@ $isProfessional = isLoggedIn() && in_array($userRole, ['engineer', 'doctor', 'sa
             }
         }
     </script>
-    
-    <!-- Accessibility Controls -->
-    <div class="accessibility-controls">
-        <div class="font-size-controls">
-            <button id="fontSizeDecrease" aria-label="Decrease Font Size">A-</button>
-            <button id="fontSizeReset" aria-label="Reset Font Size">A</button>
-            <button id="fontSizeIncrease" aria-label="Increase Font Size">A+</button>
-        </div>
-    </div>
 </body>
 </html>

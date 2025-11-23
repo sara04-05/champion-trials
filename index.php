@@ -22,8 +22,7 @@ require_once __DIR__ . '/config/config.php';
     
 </head>
 <body>
-    <!-- Navigation Bar -->
- <!-- UNIFIED NAVBAR -->
+
 <nav class="navbar navbar-expand-lg navbar-dark fixed-top" id="mainNav">
     <div class="container">
         <a class="navbar-brand" href="index.php">
@@ -43,7 +42,11 @@ require_once __DIR__ . '/config/config.php';
                     <li class="nav-item"><a class="nav-link" href="#" onclick="openSignupModal(); return false;">Sign Up</a></li>
                 <?php else: ?>
                     <li class="nav-item"><a class="nav-link" href="index.php">Home (Map)</a></li>
-                    <li class="nav-item"><a class="nav-link" href="report.php">Report an Issue</a></li>
+
+                    <?php if (!isAdmin()): ?>
+                        <li class="nav-item"><a class="nav-link" href="report.php">Report an Issue</a></li>
+                    <?php endif; ?>
+
                     <li class="nav-item"><a class="nav-link" href="blog.php">Make Your City Better</a></li>
                     <li class="nav-item"><a class="nav-link" href="my-reports.php">My Reports</a></li>
                     <li class="nav-item"><a class="nav-link" href="notifications.php">Notifications</a></li>
@@ -60,7 +63,7 @@ require_once __DIR__ . '/config/config.php';
     <div id="map" class="fullscreen-map"></div>
     
     <!-- Map Controls (shown when logged in) -->
-    <?php if (isLoggedIn()): ?>
+  <?php if (isLoggedIn() && !isAdmin()): ?>
     <div class="map-controls">
         <h3>Filters</h3>
         <div class="filter-group">
@@ -76,15 +79,7 @@ require_once __DIR__ . '/config/config.php';
                 <option value="other">Other</option>
             </select>
         </div>
-        <div class="filter-group">
-            <label>Status</label>
-            <select id="statusFilter" class="form-control">
-                <option value="all">All Status</option>
-                <option value="pending">Pending</option>
-                <option value="in_progress">In Progress</option>
-                <option value="fixed">Fixed</option>
-            </select>
-        </div>
+     
         <div class="filter-group">
             <label>Urgency</label>
             <select id="urgencyFilter" class="form-control">
@@ -95,10 +90,10 @@ require_once __DIR__ . '/config/config.php';
             </select>
         </div>
         <button class="btn btn-primary btn-block mt-3" onclick="enableReportMode()">
-            <i class="fas fa-plus"></i> Report Issue
+            Report Issue
         </button>
     </div>
-    <?php endif; ?>
+<?php endif; ?>
     
     <!-- Accessibility Controls -->
     <div class="accessibility-controls">
