@@ -32,8 +32,7 @@ if (isLoggedIn() && isset($_SESSION['house_logo'])) {
 <nav class="navbar navbar-expand-lg navbar-light fixed-top" id="mainNav">
     <div class="container">
         <a class="navbar-brand" href="<?php echo getNavPath('index.php'); ?>">
-            <?php if ($houseLogo): ?>
-            <?php endif; ?>
+            
             <i class="fas fa-tools"></i> fixIT
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
