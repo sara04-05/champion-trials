@@ -119,30 +119,6 @@ A comprehensive PHP-based web application for reporting and managing local city 
 
 
 
-## API Endpoints
-
-### Authentication
-- `POST api/auth.php?action=register` - Register new user
-- `POST api/auth.php?action=login` - Login user
-- `POST api/auth.php?action=logout` - Logout user
-- `GET api/auth.php?action=check` - Check authentication status
-
-### Issues
-- `GET api/issues.php?action=all` - Get all issues (with filters)
-- `GET api/issues.php?action=single&id={id}` - Get single issue
-- `GET api/issues.php?action=duplicates&lat={lat}&lng={lng}` - Check for duplicates
-- `POST api/issues.php?action=report` - Report new issue
-- `POST api/issues.php?action=comment` - Add comment to issue
-- `POST api/issues.php?action=upvote` - Upvote issue
-- `POST api/issues.php?action=update_status` - Update issue status (Admin only)
-
-### Blog
-- `GET api/blog.php?action=all` - Get all blog posts
-- `GET api/blog.php?action=single&id={id}` - Get single blog post
-- `POST api/blog.php?action=create` - Create blog post
-- `POST api/blog.php?action=comment` - Add comment to blog post
-
-## Smart Features
 
 ### Auto-Categorization
 The system automatically categorizes issues based on keywords in the description:
