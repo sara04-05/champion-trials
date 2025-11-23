@@ -82,66 +82,137 @@ $conn->close();
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
+        body {
+            background-color: #f4f7f6;
+            font-family: 'Arial', sans-serif;
+            color: #333;
+        }
+
         .dashboard-container {
             max-width: 1400px;
             margin: 100px auto 50px;
             padding: 20px;
         }
+
         .stat-card {
-            background: var(--glass-bg);
-            backdrop-filter: blur(20px);
-            border: 1px solid var(--glass-border);
+            background: #ffffff;
             border-radius: 15px;
             padding: 25px;
             text-align: center;
-            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
         }
+
+        .stat-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+
         .stat-value {
             font-size: 2.5rem;
-            color: var(--primary-green);
             font-weight: bold;
+            color: #4ECDC4;
         }
+
         .stat-label {
-            color: rgba(255, 255, 255, 0.7);
+            color: #6c757d;
             margin-top: 10px;
         }
+
         .chart-container {
-            background: var(--glass-bg);
-            backdrop-filter: blur(20px);
-            border: 1px solid var(--glass-border);
+            background: #ffffff;
             border-radius: 15px;
             padding: 25px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
             margin-bottom: 30px;
+        }
+
+        .table th, .table td {
+            vertical-align: middle;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        .btn-primary {
+            background-color: #4ECDC4;
+            border-color: #4ECDC4;
+        }
+
+        .btn-primary:hover {
+            background-color: #3ba89c;
+            border-color: #3ba89c;
+        }
+
+        .filter-form label {
+            color: #333;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .stat-card {
+                margin-bottom: 15px;
+            }
         }
     </style>
 </head>
 <body>
-    <?php include '../includes/navbar.php'; ?>
-    
+    <!-- Admin Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top" id="mainNav">
+        <div class="container">
+            <a class="navbar-brand" href="index.php">
+                <i class="fas fa-tools"></i> fixIT Admin
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto" id="navMenu">
+                    <!-- General links for any user -->
+                    <li class="nav-item"><a class="nav-link" href="../index.php">Home</a></li>
+                    
+                    <?php if (isAdmin()): ?>
+                        <!-- Admin-specific links -->
+                        <li class="nav-item"><a class="nav-link" href="admin_dashboard.php">Dashboard</a></li>
+                        <li class="nav-item"><a class="nav-link" href="manage_issues.php">Manage Issues</a></li>
+                        <li class="nav-item"><a class="nav-link" href="manage_users.php">Manage Users</a></li>
+                        <li class="nav-item"><a class="nav-link" href="analytics.php">Analytics</a></li>
+                    <?php endif; ?>
+
+                    <!-- User Profile link -->
+                    <li class="nav-item"><a class="nav-link" href="profile.php">Profile</a></li>
+                    <!-- Logout -->
+                    <li class="nav-item"><a class="nav-link" href="../logout.php">Logout</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
     <div class="dashboard-container">
-        <h1 style="color: var(--text-light); margin-bottom: 30px;">Admin Dashboard</h1>
+        <h1 style="color: #333; margin-bottom: 30px;">Admin Dashboard</h1>
         
         <!-- Statistics Cards -->
         <div class="row mb-4">
-            <div class="col-md-3">
+            <div class="col-md-3 col-sm-6">
                 <div class="stat-card">
                     <div class="stat-value"><?php echo $stats['total_issues']; ?></div>
                     <div class="stat-label">Total Issues</div>
                 </div>
             </div>
-            <div class="col-md-3">
+            <div class="col-md-3 col-sm-6">
                 <div class="stat-card">
                     <div class="stat-value"><?php echo $stats['fixed_issues']; ?></div>
                     <div class="stat-label">Fixed Issues</div>
                 </div>
             </div>
-            <div class="col-md-3">
+            <div class="col-md-3 col-sm-6">
                 <div class="stat-card">
                     <div class="stat-value"><?php echo $stats['pending_issues']; ?></div>
                     <div class="stat-label">Pending Issues</div>
                 </div>
             </div>
-            <div class="col-md-3">
+            <div class="col-md-3 col-sm-6">
                 <div class="stat-card">
                     <div class="stat-value"><?php echo $stats['avg_resolution_days']; ?></div>
                     <div class="stat-label">Avg Resolution (days)</div>
@@ -153,24 +224,24 @@ $conn->close();
         <div class="row mb-4">
             <div class="col-md-6">
                 <div class="chart-container">
-                    <h3 style="color: var(--text-light); margin-bottom: 20px;">Issues by Category</h3>
+                    <h3 style="color: #333; margin-bottom: 20px;">Issues by Category</h3>
                     <canvas id="categoryChart"></canvas>
                 </div>
             </div>
             <div class="col-md-6">
                 <div class="chart-container">
-                    <h3 style="color: var(--text-light); margin-bottom: 20px;">Issue Status</h3>
+                    <h3 style="color: #333; margin-bottom: 20px;">Issue Status</h3>
                     <canvas id="statusChart"></canvas>
                 </div>
             </div>
         </div>
-        
+
         <!-- Filters -->
         <div class="chart-container mb-4">
-            <h3 style="color: var(--text-light); margin-bottom: 20px;">Filter Issues</h3>
-            <form method="GET" class="row g-3">
+            <h3 style="color: #333; margin-bottom: 20px;">Filter Issues</h3>
+            <form method="GET" class="row g-3 filter-form">
                 <div class="col-md-4">
-                    <label class="form-label" style="color: var(--text-light);">Category</label>
+                    <label class="form-label">Category</label>
                     <select name="category" class="form-control">
                         <option value="all" <?php echo ($filters['category'] === 'all') ? 'selected' : ''; ?>>All</option>
                         <?php foreach (ISSUE_CATEGORIES as $key => $cat): ?>
@@ -181,7 +252,7 @@ $conn->close();
                     </select>
                 </div>
                 <div class="col-md-4">
-                    <label class="form-label" style="color: var(--text-light);">Status</label>
+                    <label class="form-label">Status</label>
                     <select name="status" class="form-control">
                         <option value="all" <?php echo ($filters['status'] === 'all') ? 'selected' : ''; ?>>All</option>
                         <option value="pending" <?php echo ($filters['status'] === 'pending') ? 'selected' : ''; ?>>Pending</option>
@@ -190,7 +261,7 @@ $conn->close();
                     </select>
                 </div>
                 <div class="col-md-4">
-                    <label class="form-label" style="color: var(--text-light);">City</label>
+                    <label class="form-label">City</label>
                     <input type="text" name="city" class="form-control" value="<?php echo htmlspecialchars($filters['city']); ?>" placeholder="Filter by city">
                 </div>
                 <div class="col-12">
@@ -198,12 +269,12 @@ $conn->close();
                 </div>
             </form>
         </div>
-        
+
         <!-- Issues Table -->
         <div class="chart-container">
-            <h3 style="color: var(--text-light); margin-bottom: 20px;">Manage Issues</h3>
+            <h3 style="color: #333; margin-bottom: 20px;">Manage Issues</h3>
             <div class="table-responsive">
-                <table class="table" style="color: var(--text-light);">
+                <table class="table">
                     <thead>
                         <tr>
                             <th>ID</th>
@@ -239,11 +310,11 @@ $conn->close();
                 </table>
             </div>
         </div>
-        
+
         <!-- Most Active Users -->
         <div class="chart-container">
-            <h3 style="color: var(--text-light); margin-bottom: 20px;">Most Active Users</h3>
-            <table class="table" style="color: var(--text-light);">
+            <h3 style="color: #333; margin-bottom: 20px;">Most Active Users</h3>
+            <table class="table">
                 <thead>
                     <tr>
                         <th>Name</th>
@@ -288,7 +359,7 @@ $conn->close();
                 }]
             }
         });
-        
+
         // Status Chart
         const statusCtx = document.getElementById('statusChart').getContext('2d');
         new Chart(statusCtx, {
@@ -306,7 +377,7 @@ $conn->close();
                 }]
             }
         });
-        
+
         // Update issue status
         async function updateIssueStatus(issueId, status) {
             try {
@@ -317,9 +388,9 @@ $conn->close();
                     },
                     body: JSON.stringify({ issue_id: issueId, status: status })
                 });
-                
+
                 const data = await response.json();
-                
+
                 if (data.success) {
                     showAlert('Issue status updated successfully', 'success');
                 } else {
@@ -333,4 +404,3 @@ $conn->close();
     </script>
 </body>
 </html>
-

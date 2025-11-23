@@ -3,7 +3,6 @@ require_once __DIR__ . '/config/config.php';
 require_once __DIR__ . '/includes/auth.php';
 require_once __DIR__ . '/includes/blog.php';
 
-// Allow viewing without login, but restrict posting/commenting
 $posts = getBlogPosts();
 $userRole = isLoggedIn() ? getUserRole() : 'guest';
 $isProfessional = isLoggedIn() && in_array($userRole, ['engineer', 'doctor', 'safety_inspector', 'environmental_officer', 'construction_worker']);
@@ -243,6 +242,9 @@ body::before {
 
 .blog-stats i {
     color: #00ff00;
+}
+p{
+    color:white;
 }
 
 /* === BUTTONS (match Contact page / neon) === */

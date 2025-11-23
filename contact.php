@@ -136,13 +136,126 @@ require_once __DIR__ . '/config/config.php';
         text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
     }
 
+    /* === MODAL STYLES === */
+/* --- MODAL OVERLAY (background overlay for both Login and Signup modals) --- */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);  /* Semi-transparent dark background */
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+/* --- GLASSMORPHISM MODAL (the actual modal content) --- */
+.glassmorphism-modal {
+    background: rgba(255, 255, 255, 0.1);  /* Transparent white background */
+    padding: 30px;
+    border-radius: 15px;
+    backdrop-filter: blur(15px);  /* Glassmorphism effect with blur */
+    width: 100%;
+    max-width: 550px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);  /* Soft shadow for modal */
+    color: #ffffff;
+}
+
+/* --- CLOSE BUTTON (close modal icon) --- */
+.close-modal {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    font-size: 2rem;
+    cursor: pointer;
+    color: #ffffff;
+}
+
+/* --- MODAL TITLE (for both Login and Signup modals) --- */
+.modal-title {
+    font-size: 2.5rem;
+    color: #ffffff;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+/* --- FORM GROUP (for the form inputs inside modals) --- */
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    color: #ffffff;
+    font-size: 1.1rem;
+    margin-bottom: 5px;
+}
+
+.form-group input,
+.form-group select {
+    width: 100%;
+    padding: 12px;
+    font-size: 1rem;
+    border: 1px solid #fff;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.2);
+    color: #ffffff;
+}
+
+.form-group input::placeholder,
+.form-group select {
+    color: #bbbbbb;
+}
+
+/* --- SUBMIT BUTTON (Login and Signup buttons) --- */
+button[type="submit"] {
+    width: 100%;
+    padding: 15px;
+    background: #00ff00;
+    border: none;
+    border-radius: 10px;
+    color: #ffffff;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+button[type="submit"]:hover {
+    background: #00cc00;  /* Darker green when hovering */
+}
+
+/* --- LINK STYLE (Sign Up / Login switch links) --- */
+p a {
+    color: #00ff00;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+p a:hover {
+    text-decoration: underline;
+}
+
+/* --- RESPONSIVE DESIGN --- */
+@media (max-width: 768px) {
+    .glassmorphism-modal {
+        max-width: 90%;  /* Smaller modal width on mobile devices */
+    }
+    .modal-title {
+        font-size: 2rem;  /* Smaller title on mobile devices */
+    }
+    .form-group input,
+    .form-group select {
+        padding: 10px;  /* Adjust input padding on mobile */
+    }
+}
+
 </style>
 </head>
 
 <body>
 
 <!-- === UNIFIED NAVBAR === -->
-<!-- UNIFIED NAVBAR -->
 <nav class="navbar navbar-expand-lg navbar-dark fixed-top" id="mainNav">
     <div class="container">
         <a class="navbar-brand" href="index.php">
@@ -174,7 +287,6 @@ require_once __DIR__ . '/config/config.php';
     </div>
 </nav>
 
-
 <!-- HERO -->
 <div class="contact-hero">
     <h1><i class="fas fa-envelope-open-text"></i> Contact Us</h1>
@@ -182,7 +294,6 @@ require_once __DIR__ . '/config/config.php';
 </div>
 
 <div class="contact-container">
-
     <div class="contact-card">
         <h1 class="contact-title">Get in Touch</h1>
         <p class="section-subtitle">Reach us through any of the channels below</p>
@@ -209,9 +320,102 @@ require_once __DIR__ . '/config/config.php';
 
         <h2 class="section-title" style="margin-top: 50px;">Report a Bug 🐞</h2>
         <p class="section-subtitle">Found an issue? Help us improve by describing the problem in detail!</p>
-
     </div>
 </div>
+
+<!-- Login Modal -->
+   <div class="modal-overlay" id="loginModal" style="display: none;">
+        <div class="glassmorphism-modal">
+            <span class="close-modal" onclick="closeLoginModal()">&times;</span>
+            <h2 class="modal-title">Welcome Back</h2>
+            <form id="loginForm" onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label><i class="fas fa-user"></i> Username or Email</label>
+                    <input type="text" id="loginUsername" class="form-control" placeholder="Enter your username or email" required>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-lock"></i> Password</label>
+                    <input type="password" id="loginPassword" class="form-control" placeholder="Enter your password" required>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-map-marker-alt"></i> Location (Optional)</label>
+                    <select id="loginState" class="form-control">
+                        <option value="">Select State/Region</option>
+                        <option value="Kosovo">Kosovo</option>
+                        <option value="Albania">Albania</option>
+                        <option value="North Macedonia">North Macedonia</option>
+                        <option value="Serbia">Serbia</option>
+                        <option value="Montenegro">Montenegro</option>
+                    </select>
+                    <select id="loginCity" class="form-control mt-2" disabled>
+                        <option value="">Select City</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">
+                    <i class="fas fa-sign-in-alt"></i> Login
+                </button>
+                <p style="text-align: center; margin-top: 20px; color: var(--text-muted);">
+                    Don't have an account? <a href="#" onclick="closeLoginModal(); openSignupModal(); return false;" style="color: var(--primary-green); text-decoration: none;">Sign Up</a>
+                </p>
+            </form>
+        </div>
+    </div>
+
+<!-- Signup Modal -->
+  <div class="modal-overlay" id="signupModal" style="display: none;">
+        <div class="glassmorphism-modal" style="max-width: 550px;">
+            <span class="close-modal" onclick="closeSignupModal()">&times;</span>
+            <h2 class="modal-title">Join fixIT</h2>
+            <form id="signupForm" onsubmit="handleSignup(event)">
+                <div class="form-group">
+                    <label><i class="fas fa-map-marker-alt"></i> Location</label>
+                    <select id="signupState" class="form-control" required>
+                        <option value="">Select State/Region</option>
+                        <option value="Kosovo">Kosovo</option>
+                        <option value="Albania">Albania</option>
+                        <option value="North Macedonia">North Macedonia</option>
+                        <option value="Serbia">Serbia</option>
+                        <option value="Montenegro">Montenegro</option>
+                    </select>
+                    <select id="signupCity" class="form-control mt-2" required disabled>
+                        <option value="">Select City</option>
+                    </select>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label><i class="fas fa-user"></i> First Name</label>
+                            <input type="text" id="signupName" class="form-control" placeholder="First name" required>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label><i class="fas fa-user"></i> Last Name</label>
+                            <input type="text" id="signupSurname" class="form-control" placeholder="Last name" required>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-at"></i> Username</label>
+                    <input type="text" id="signupUsername" class="form-control" placeholder="Choose a username" required>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-envelope"></i> Email</label>
+                    <input type="email" id="signupEmail" class="form-control" placeholder="your.email@example.com" required>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-lock"></i> Password</label>
+                    <input type="password" id="signupPassword" class="form-control" placeholder="Create a strong password" required>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">
+                    <i class="fas fa-user-plus"></i> Create Account
+                </button>
+                <p style="text-align: center; margin-top: 20px; color: var(--text-muted);">
+                    Already have an account? <a href="#" onclick="closeSignupModal(); openLoginModal(); return false;" style="color: var(--primary-green); text-decoration: none;">Login</a>
+                </p>
+            </form>
+        </div>
+    </div>
 
 <!-- Accessibility Controls -->
 <div class="accessibility-controls">
@@ -224,5 +428,25 @@ require_once __DIR__ . '/config/config.php';
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="assets/js/main.js"></script>
+
+<script>
+    // Open and Close Modals
+    function openLoginModal() {
+        document.getElementById('loginModal').style.display = 'flex';
+    }
+
+    function closeLoginModal() {
+        document.getElementById('loginModal').style.display = 'none';
+    }
+
+    function openSignupModal() {
+        document.getElementById('signupModal').style.display = 'flex';
+    }
+
+    function closeSignupModal() {
+        document.getElementById('signupModal').style.display = 'none';
+    }
+</script>
+
 </body>
 </html>
