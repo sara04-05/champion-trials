@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/../config/config.php';
 require_once __DIR__ . '/../config/database.php';
+require_once __DIR__ . '/issues.php'; // Include issues.php to use awardPoints() function
 
 // Create blog post
 function createBlogPost($userId, $title, $content, $imagePath = null) {
@@ -94,12 +95,37 @@ function getBlogPostById($postId) {
 function addBlogComment($postId, $userId, $commentText) {
     $conn = getDBConnection();
     
+    // Get blog post details to notify the author
+    $stmt = $conn->prepare("SELECT user_id, title FROM blog_posts WHERE id = ?");
+    $stmt->bind_param("i", $postId);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $post = $result->fetch_assoc();
+    $stmt->close();
+    
+    if (!$post) {
+        $conn->close();
+        return ['success' => false, 'message' => 'Blog post not found'];
+    }
+    
+    // Insert comment
     $stmt = $conn->prepare("INSERT INTO blog_comments (blog_post_id, user_id, comment_text) VALUES (?, ?, ?)");
     $stmt->bind_param("iis", $postId, $userId, $commentText);
     
     if ($stmt->execute()) {
-        // Award points
+        // Award points to commenter
         awardPoints($userId, POINTS_COMMENT, "Commented on blog post");
+        
+        // Check for badges after commenting
+        checkAndAwardBadges($userId);
+        
+        // Send notification to blog post author (if not commenting on own post)
+        if ($post['user_id'] != $userId) {
+            $commenterName = getUserNameById($userId);
+            $title = "New Comment on Your Post";
+            $message = "{$commenterName} commented on your blog post \"{$post['title']}\" (Post #{$postId})";
+            createNotification($post['user_id'], $title, $message, "blog_comment");
+        }
         
         $stmt->close();
         $conn->close();
@@ -109,23 +135,6 @@ function addBlogComment($postId, $userId, $commentText) {
     $stmt->close();
     $conn->close();
     return ['success' => false];
-}
-
-// Helper function for awarding points (if not already included)
-function awardPoints($userId, $points, $reason) {
-    $conn = getDBConnection();
-    
-    $stmt = $conn->prepare("UPDATE users SET points = points + ? WHERE id = ?");
-    $stmt->bind_param("ii", $points, $userId);
-    $stmt->execute();
-    $stmt->close();
-    
-    $stmt = $conn->prepare("INSERT INTO points_history (user_id, points, reason) VALUES (?, ?, ?)");
-    $stmt->bind_param("iis", $userId, $points, $reason);
-    $stmt->execute();
-    $stmt->close();
-    
-    $conn->close();
 }
 ?>
 

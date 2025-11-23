@@ -16,313 +16,221 @@ $isProfessional = isLoggedIn() && in_array($userRole, ['engineer', 'doctor', 'sa
     <link rel="stylesheet" href="assets/css/style.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <?php include 'includes/theme-loader.php'; ?>
     <style>
-        /* === GLOBAL BACKGROUND (same as Contact/About) === */
-body {
-    background: linear-gradient(135deg, #000000 0%, #1a1a2e 50%, #000000 100%);
-    position: relative;
-}
-
-body::before {
-    content: '';
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background:
-        radial-gradient(circle at 20% 30%, rgba(0, 255, 0, 0.12) 0%, transparent 50%),
-        radial-gradient(circle at 80% 70%, rgba(0, 0, 255, 0.1) 0%, transparent 50%),
-        radial-gradient(circle at 50% 50%, rgba(255, 0, 0, 0.08) 0%, transparent 50%);
-    pointer-events: none;
-    z-index: 0;
-}
-
-/* === BLOG CONTAINER === */
-.blog-container {
-    max-width: 1100px;
-    margin: 120px auto 70px;
-    padding: 20px;
-    position: relative;
-    z-index: 1;
-}
-
-/* === BLOG HERO HEADER (matches Contact hero) === */
-.blog-header-section {
-    text-align: center;
-    padding: 70px 20px;
-    background: linear-gradient(135deg,
-        rgba(0, 255, 0, 0.12),
-        rgba(0, 0, 255, 0.12),
-        rgba(255, 0, 0, 0.12)
-    );
-    border-radius: 25px;
-    border: 3px solid #ffffff;
-    position: relative;
-    overflow: hidden;
-    margin-bottom: 60px;
-    box-shadow:
-        0 0 25px rgba(0, 255, 0, 0.25),
-        0 0 30px rgba(0, 0, 255, 0.2),
-        inset 0 0 15px rgba(255, 255, 255, 0.1);
-}
-
-.blog-header-section::before {
-    content: '';
-    position: absolute;
-    top: -40%;
-    left: -40%;
-    width: 180%;
-    height: 180%;
-    background:
-        radial-gradient(circle, rgba(0, 255, 0, 0.12) 0%, transparent 60%),
-        radial-gradient(circle, rgba(0, 0, 255, 0.12) 0%, transparent 60%);
-    animation: rotate 20s linear infinite;
-}
-
-/* === Blog header text === */
-.blog-header-section h1 {
-    font-size: 3.5rem;
-    font-weight: 800;
-    color: #ffffff;
-    margin-bottom: 15px;
-    text-shadow:
-        0 0 15px rgba(0, 255, 0, 0.5),
-        0 0 20px rgba(0, 0, 255, 0.3);
-}
-
-.blog-header-section p {
-    font-size: 1.3rem;
-    color: #ffffff;
-    opacity: 0.9;
-}
-
-.blog-header-section p i {
-    color: #00ff00;
-    text-shadow: 0 0 10px #00ff00;
-}
-
-/* === RECENT POSTS HEADER === */
-.blog-container h2 {
-    color: #ffffff !important;
-    text-shadow: 0 0 10px rgba(0,255,0,0.5);
-}
-
-/* === BLOG POST CARD (matches Contact card / About cards) === */
-.blog-post {
-    background: rgba(0, 0, 0, 0.75);
-    border: 3px solid #ffffff;
-    border-radius: 25px;
-    padding: 40px;
-    margin-bottom: 40px;
-    box-shadow:
-        0 0 20px rgba(0, 255, 0, 0.2),
-        0 0 25px rgba(0, 0, 255, 0.15),
-        inset 0 0 10px rgba(255, 255, 255, 0.1);
-    transition: 0.35s ease;
-    position: relative;
-    overflow: hidden;
-}
-
-.blog-post:hover {
-    transform: translateY(-6px) scale(1.015);
-    border-color: #00ff00;
-    box-shadow:
-        0 0 30px #00ff00,
-        0 0 40px rgba(0, 0, 255, 0.35);
-}
-
-.blog-post::before {
-    content: '';
-    position: absolute;
-    top: -60%;
-    left: -60%;
-    width: 200%;
-    height: 200%;
-    background: radial-gradient(circle,
-        rgba(0,255,0,0.1),
-        rgba(0,0,255,0.08),
-        rgba(255,0,0,0.08),
-        transparent 70%
-    );
-    animation: rotate 18s linear infinite;
-    pointer-events: none;
-}
-
-/* === AUTHOR HEADER INSIDE CARD === */
-.blog-author-info {
-    display: flex;
-    align-items: center;
-    gap: 18px;
-}
-
-.blog-author-avatar {
-    width: 55px;
-    height: 55px;
-    border-radius: 50%;
-    border: 2px solid #ffffff;
-    background: rgba(255,255,255,0.1);
-    color: #00ff00;
-    font-weight: 700;
-    font-size: 1.3rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-shadow: 0 0 10px #00ff00;
-}
-
-.blog-author {
-    color: #ffffff;
-    font-weight: 700;
-    font-size: 1.1rem;
-    text-shadow: 0 0 10px black;
-}
-
-.blog-date {
-    color: #d0d0d0;
-    font-size: 0.9rem;
-}
-
-/* === PROFESSIONAL BADGE === */
-.professional-badge {
-    background: linear-gradient(135deg, #00ff00, #00cc66);
-    padding: 4px 10px;
-    border-radius: 15px;
-    font-size: 0.7rem;
-    color: #000;
-    font-weight: bold;
-    box-shadow: 0 0 12px #00ff00;
-}
-
-/* === BLOG TITLE === */
-.blog-title {
-    color: #ffffff;
-    font-size: 2rem;
-    font-weight: 800;
-    margin-top: 20px;
-    margin-bottom: 20px;
-    text-shadow:
-        0 0 10px rgba(0,255,0,0.4),
-        0 0 10px rgba(0,0,255,0.4);
-}
-
-/* === BLOG IMAGE === */
-.blog-image {
-    width: 100%;
-    border-radius: 20px;
-    margin-bottom: 25px;
-    box-shadow:
-        0 0 20px rgba(255,255,255,0.1),
-        0 0 30px rgba(0,255,0,0.2);
-}
-
-/* === BLOG PREVIEW TEXT === */
-.blog-content {
-    color: #eeeeee;
-    font-size: 1.05rem;
-    line-height: 1.8;
-}
-
-.blog-content-preview::after {
-    background: linear-gradient(to bottom, transparent, rgba(0,0,0,0.8));
-}
-
-/* === BLOG FOOTER === */
-.blog-footer {
-    border-top: 2px solid #ffffff;
-    padding-top: 15px;
-    display: flex;
-    justify-content: space-between;
-}
-
-.blog-stats span {
-    color: #cccccc;
-    text-shadow: 0 0 10px black;
-}
-
-.blog-stats i {
-    color: #00ff00;
-}
-p{
-    color:white;
-}
-
-/* === BUTTONS (match Contact page / neon) === */
-.create-post-btn,
-.btn-primary {
-    background: linear-gradient(135deg, #00ff00, #00bb55);
-    border: 2px solid #ffffff;
-    padding: 12px 26px;
-    border-radius: 14px;
-    color: #000 !important;
-    font-weight: 700;
-    transition: 0.3s ease;
-    box-shadow: 0 0 15px #00ff00;
-}
-
-.create-post-btn:hover,
-.btn-primary:hover {
-    transform: translateY(-4px) scale(1.05);
-    box-shadow:
-        0 0 25px #00ff00,
-        0 0 35px rgba(0,0,255,0.3);
-    border-color: #00ff00;
-}
-
-.btn-primary i {
-    color: #000 !important;
-}
-
-/* === EMPTY STATE === */
-.empty-state i {
-    color: #ffffff;
-    text-shadow: 0 0 15px rgba(255,255,255,0.5);
-}
-
-.empty-state h3 {
-    color: #ffffff;
-}
-
-/* === ROTATION ANIMATION === */
-@keyframes rotate {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
-}
-
-/* === RESPONSIVE === */
-@media (max-width: 768px) {
-    .blog-header-section h1 {
-        font-size: 2.4rem;
-    }
-    .blog-title {
-        font-size: 1.6rem;
-    }
-}
-
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+        }
+        
+        .blog-container {
+            max-width: 1100px;
+            margin: 120px auto 70px;
+            padding: 20px;
+        }
+        
+        .blog-header-section {
+            text-align: center;
+            padding: 60px 20px;
+            background: var(--color-white);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            margin-bottom: 60px;
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .blog-header-section h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 15px;
+        }
+        
+        .blog-header-section h1 i {
+            color: var(--primary);
+        }
+        
+        .blog-header-section p {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+        }
+        
+        .blog-header-section p i {
+            color: var(--primary);
+        }
+        
+        .blog-post {
+            background: var(--color-white);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 40px;
+            margin-bottom: 40px;
+            box-shadow: var(--shadow-sm);
+            transition: all var(--transition-base);
+        }
+        
+        .blog-post:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .blog-author-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .blog-author-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: 2px solid var(--border-color);
+            background: var(--primary);
+            color: var(--color-white);
+            font-weight: 700;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .blog-author {
+            color: var(--text-primary);
+            font-weight: 600;
+            font-size: 1rem;
+        }
+        
+        .blog-date {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+        
+        .professional-badge {
+            background: var(--primary);
+            padding: 4px 10px;
+            border-radius: var(--radius-sm);
+            font-size: 0.75rem;
+            color: var(--color-white);
+            font-weight: 600;
+            margin-left: 10px;
+        }
+        
+        .blog-title {
+            color: var(--text-primary);
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .blog-image {
+            width: 100%;
+            border-radius: var(--radius-md);
+            margin-bottom: 25px;
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .blog-content {
+            color: var(--text-secondary);
+            font-size: 1rem;
+            line-height: 1.8;
+        }
+        
+        .blog-footer {
+            border-top: 1px solid var(--border-color);
+            padding-top: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+        }
+        
+        .blog-stats span {
+            color: var(--text-muted);
+        }
+        
+        .blog-stats i {
+            color: var(--primary);
+        }
+        
+        .create-post-btn {
+            background: var(--primary);
+            color: var(--color-white);
+            border: none;
+            padding: 12px 24px;
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            transition: all var(--transition-base);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .create-post-btn:hover {
+            background: #45a049;
+            color: var(--color-white);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            background: var(--color-white);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+        }
+        
+        .empty-state i {
+            font-size: 4rem;
+            color: var(--text-muted);
+            margin-bottom: 20px;
+        }
+        
+        .empty-state h3 {
+            color: var(--text-primary);
+            margin-bottom: 10px;
+        }
+        
+        .empty-state p {
+            color: var(--text-secondary);
+        }
+        
+        @media (max-width: 768px) {
+            .blog-header-section h1 {
+                font-size: 2rem;
+            }
+            
+            .blog-title {
+                font-size: 1.5rem;
+            }
+        }
     </style>
 </head>
 <body>
-<?php include 'includes/navbar.php'; ?>
+    <?php include 'includes/navbar.php'; ?>
     
     <div class="blog-container">
         <div class="blog-header-section">
             <h1><i class="fas fa-blog"></i> Make Your City Better</h1>
             <p>Share insights, ideas, and expert knowledge to improve our community</p>
             <?php if ($isProfessional): ?>
-                <p style="margin-top: 10px; color: var(--primary-green);">
+                <p style="margin-top: 10px; color: var(--primary);">
                     <i class="fas fa-star"></i> You're a verified professional - your posts will be highlighted
                 </p>
             <?php endif; ?>
         </div>
         
         <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2 style="color: var(--text-light); font-size: 1.5rem;">Recent Posts</h2>
+            <h2 style="color: var(--text-primary); font-size: 1.5rem;">Recent Posts</h2>
             <?php if (isLoggedIn()): ?>
                 <button class="create-post-btn" onclick="openCreatePostModal()">
                     <i class="fas fa-plus"></i> Create New Post
                 </button>
             <?php else: ?>
-                <a href="index.php" class="create-post-btn" style="text-decoration: none;">
+                <a href="#" class="create-post-btn" onclick="openSignupModal(); return false;">
                     <i class="fas fa-sign-in-alt"></i> Login to Post
                 </a>
             <?php endif; ?>
@@ -341,7 +249,7 @@ p{
                                     <div class="blog-author">
                                         <?php echo htmlspecialchars($post['name'] . ' ' . $post['surname']); ?>
                                         <?php if ($post['role'] !== 'regular_user'): ?>
-                                            <span class="professional-badge ms-2">
+                                            <span class="professional-badge">
                                                 <i class="fas fa-certificate"></i> <?php echo ucfirst(str_replace('_', ' ', $post['role'])); ?>
                                             </span>
                                         <?php endif; ?>
@@ -379,11 +287,13 @@ p{
             <?php else: ?>
                 <div class="blog-post empty-state">
                     <i class="fas fa-blog"></i>
-                    <h3 style="color: var(--text-light); margin-bottom: 10px;">No posts yet</h3>
+                    <h3>No posts yet</h3>
                     <p>Be the first to share your thoughts and help make our city better!</p>
-                    <button class="create-post-btn mt-3" onclick="openCreatePostModal()">
-                        <i class="fas fa-plus"></i> Create First Post
-                    </button>
+                    <?php if (isLoggedIn()): ?>
+                        <button class="create-post-btn mt-3" onclick="openCreatePostModal()">
+                            <i class="fas fa-plus"></i> Create First Post
+                        </button>
+                    <?php endif; ?>
                 </div>
             <?php endif; ?>
         </div>
@@ -398,7 +308,7 @@ p{
                 <i class="fas fa-edit"></i> Create New Post
             </h2>
             <?php if ($isProfessional): ?>
-                <p style="text-align: center; color: var(--primary-green); margin-bottom: 20px;">
+                <p style="text-align: center; color: var(--primary); margin-bottom: 20px;">
                     <i class="fas fa-star"></i> Your professional insights will be highlighted
                 </p>
             <?php endif; ?>
@@ -476,7 +386,6 @@ p{
             
             const imageFile = document.getElementById('postImage').files[0];
             if (imageFile) {
-                // Validate file size (5MB)
                 if (imageFile.size > 5 * 1024 * 1024) {
                     showAlert('Image size must be less than 5MB', 'error');
                     return;
@@ -515,5 +424,14 @@ p{
             }
         }
     </script>
+    
+    <!-- Accessibility Controls -->
+    <div class="accessibility-controls">
+        <div class="font-size-controls">
+            <button id="fontSizeDecrease" aria-label="Decrease Font Size">A-</button>
+            <button id="fontSizeReset" aria-label="Reset Font Size">A</button>
+            <button id="fontSizeIncrease" aria-label="Increase Font Size">A+</button>
+        </div>
+    </div>
 </body>
 </html>

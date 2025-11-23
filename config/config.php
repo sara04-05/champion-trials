@@ -38,6 +38,34 @@ define('POINTS_COMMENT', 5);
 define('POINTS_BLOG_POST', 15);
 define('POINTS_UPVOTE', 2);
 
+// Houses System
+define('HOUSES', [
+    'engineers' => [
+        'name' => 'Engineers',
+        'colors' => ['primary' => '#4CAF50', 'secondary' => '#000000', 'accent' => '#FFFFFF'],
+        'logo' => '🏗️',
+        'description' => 'Builders and innovators'
+    ],
+    'shadows' => [
+        'name' => 'Shadows',
+        'colors' => ['primary' => '#2196F3', 'secondary' => '#000000', 'accent' => '#FFFFFF'],
+        'logo' => '🌙',
+        'description' => 'Mysterious and strategic'
+    ],
+    'hipsters' => [
+        'name' => 'Hipsters',
+        'colors' => ['primary' => '#9C27B0', 'secondary' => '#000000', 'accent' => '#FFFFFF'],
+        'logo' => '🎨',
+        'description' => 'Creative and unique'
+    ],
+    'speedsters' => [
+        'name' => 'Speedsters',
+        'colors' => ['primary' => '#f44336', 'secondary' => '#000000', 'accent' => '#FFFFFF'],
+        'logo' => '⚡',
+        'description' => 'Fast and energetic'
+    ]
+]);
+
 // Helper Functions
 function isLoggedIn() {
     return isset($_SESSION['user_id']);

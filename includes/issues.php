@@ -309,12 +309,37 @@ function updateIssueStatus($issueId, $status, $assignedWorkerId = null) {
 function addIssueComment($issueId, $userId, $commentText) {
     $conn = getDBConnection();
     
+    // Get issue details to notify the reporter
+    $stmt = $conn->prepare("SELECT user_id, title FROM issues WHERE id = ?");
+    $stmt->bind_param("i", $issueId);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $issue = $result->fetch_assoc();
+    $stmt->close();
+    
+    if (!$issue) {
+        $conn->close();
+        return ['success' => false, 'message' => 'Issue not found'];
+    }
+    
+    // Insert comment
     $stmt = $conn->prepare("INSERT INTO issue_comments (issue_id, user_id, comment_text) VALUES (?, ?, ?)");
     $stmt->bind_param("iis", $issueId, $userId, $commentText);
     
     if ($stmt->execute()) {
         // Award points
         awardPoints($userId, POINTS_COMMENT, "Commented on issue");
+        
+        // Check for badges after commenting
+        checkAndAwardBadges($userId);
+        
+        // Send notification to issue reporter (if not commenting on own issue)
+        if ($issue['user_id'] != $userId) {
+            $commenterName = getUserNameById($userId);
+            $title = "New Comment on Your Issue";
+            $message = "{$commenterName} commented on your issue \"{$issue['title']}\" (Issue #{$issueId})";
+            createNotification($issue['user_id'], $title, $message, "issue_comment");
+        }
         
         $stmt->close();
         $conn->close();
@@ -324,6 +349,23 @@ function addIssueComment($issueId, $userId, $commentText) {
     $stmt->close();
     $conn->close();
     return ['success' => false];
+}
+
+// Helper function to get user name by ID
+function getUserNameById($userId) {
+    $conn = getDBConnection();
+    $stmt = $conn->prepare("SELECT name, surname FROM users WHERE id = ?");
+    $stmt->bind_param("i", $userId);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $user = $result->fetch_assoc();
+    $stmt->close();
+    $conn->close();
+    
+    if ($user) {
+        return $user['name'] . ' ' . $user['surname'];
+    }
+    return 'Someone';
 }
 
 // Upvote issue
@@ -394,41 +436,79 @@ function awardPoints($userId, $points, $reason) {
 function checkAndAwardBadges($userId) {
     $conn = getDBConnection();
     
-    // Get user stats
+    // Get user points
+    $stmt = $conn->prepare("SELECT points FROM users WHERE id = ?");
+    $stmt->bind_param("i", $userId);
+    $stmt->execute();
+    $userResult = $stmt->get_result();
+    $user = $userResult->fetch_assoc();
+    $userPoints = (int)($user['points'] ?? 0);
+    $stmt->close();
+    
+    // Get user stats - handle NULL values properly
     $stmt = $conn->prepare("
         SELECT 
-            COUNT(*) as total_issues,
-            SUM(CASE WHEN category IN ('pothole') THEN 1 ELSE 0 END) as road_issues,
-            SUM(CASE WHEN category IN ('trash', 'environmental') THEN 1 ELSE 0 END) as env_issues
+            COALESCE(COUNT(*), 0) as total_issues,
+            COALESCE(SUM(CASE WHEN category IN ('pothole') THEN 1 ELSE 0 END), 0) as road_issues,
+            COALESCE(SUM(CASE WHEN category IN ('trash', 'environmental') THEN 1 ELSE 0 END), 0) as env_issues
         FROM issues
         WHERE user_id = ?
     ");
     $stmt->bind_param("i", $userId);
     $stmt->execute();
-    $stats = $stmt->get_result()->fetch_assoc();
+    $result = $stmt->get_result();
+    $stats = $result->fetch_assoc();
     $stmt->close();
     
-    // Check for Active Citizen badge (10+ issues)
-    if ($stats['total_issues'] >= 10) {
-        $badgeId = 1; // Active Citizen
+    // Ensure we have valid numbers
+    $totalIssues = (int)($stats['total_issues'] ?? 0);
+    $roadIssues = (int)($stats['road_issues'] ?? 0);
+    $envIssues = (int)($stats['env_issues'] ?? 0);
+    
+    // Check for Active Citizen badge (10+ issues) - Badge ID 1
+    if ($totalIssues >= 10) {
+        $badgeId = 1;
         $stmt = $conn->prepare("INSERT IGNORE INTO user_badges (user_id, badge_id) VALUES (?, ?)");
         $stmt->bind_param("ii", $userId, $badgeId);
         $stmt->execute();
         $stmt->close();
     }
     
-    // Check for Road Saver badge (5+ road issues)
-    if ($stats['road_issues'] >= 5) {
-        $badgeId = 2; // Road Saver
+    // Check for Road Saver badge (5+ road issues) - Badge ID 2
+    if ($roadIssues >= 5) {
+        $badgeId = 2;
         $stmt = $conn->prepare("INSERT IGNORE INTO user_badges (user_id, badge_id) VALUES (?, ?)");
         $stmt->bind_param("ii", $userId, $badgeId);
         $stmt->execute();
         $stmt->close();
     }
     
-    // Check for Green City Hero badge (5+ environmental issues)
-    if ($stats['env_issues'] >= 5) {
-        $badgeId = 3; // Green City Hero
+    // Check for Green City Hero badge (5+ environmental issues) - Badge ID 3
+    if ($envIssues >= 5) {
+        $badgeId = 3;
+        $stmt = $conn->prepare("INSERT IGNORE INTO user_badges (user_id, badge_id) VALUES (?, ?)");
+        $stmt->bind_param("ii", $userId, $badgeId);
+        $stmt->execute();
+        $stmt->close();
+    }
+    
+    // Check for points-based badge (10+ points) - Create a new badge if needed
+    // First check if badge ID 4 exists (Community Helper or create new one)
+    if ($userPoints >= 10) {
+        // Check if badge ID 4 exists, if not create it
+        $stmt = $conn->prepare("SELECT id FROM badges WHERE id = 4");
+        $stmt->execute();
+        $badgeCheck = $stmt->get_result();
+        if ($badgeCheck->num_rows == 0) {
+            // Create points badge
+            $stmt->close();
+            $stmt = $conn->prepare("INSERT INTO badges (id, name, description, icon) VALUES (4, 'Point Collector', 'Earned 10+ points', '⭐') ON DUPLICATE KEY UPDATE name=name");
+            $stmt->execute();
+        }
+        $stmt->close();
+        
+        // Award badge
+        $badgeId = 4;
         $stmt = $conn->prepare("INSERT IGNORE INTO user_badges (user_id, badge_id) VALUES (?, ?)");
         $stmt->bind_param("ii", $userId, $badgeId);
         $stmt->execute();

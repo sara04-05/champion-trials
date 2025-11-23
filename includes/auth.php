@@ -70,6 +70,19 @@ function loginUser($username, $password, $state = null, $city = null) {
                 $_SESSION['city'] = $user['city'];
             }
             
+            // Load house data if exists
+            $houseStmt = $conn->prepare("SELECT house, house_logo FROM users WHERE id = ?");
+            $houseStmt->bind_param("i", $user['id']);
+            $houseStmt->execute();
+            $houseResult = $houseStmt->get_result();
+            if ($houseRow = $houseResult->fetch_assoc()) {
+                if ($houseRow['house']) {
+                    $_SESSION['house'] = $houseRow['house'];
+                    $_SESSION['house_logo'] = $houseRow['house_logo'];
+                }
+            }
+            $houseStmt->close();
+            
             $stmt->close();
             $conn->close();
             return ['success' => true];

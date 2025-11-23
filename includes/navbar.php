@@ -1,10 +1,40 @@
 <?php
 // Unified Navbar Component
 // This navbar works on ALL pages and includes login/signup modals
+
+// Determine path prefix based on current directory
+// If we're in admin/ subdirectory, we need ../ prefix
+$currentDir = dirname($_SERVER['PHP_SELF']);
+$isAdminDir = strpos($currentDir, '/admin') !== false || basename(dirname($_SERVER['SCRIPT_FILENAME'])) === 'admin';
+$pathPrefix = $isAdminDir ? '../' : '';
+
+// Helper function to get correct path
+function getNavPath($path) {
+    global $pathPrefix;
+    return $pathPrefix . $path;
+}
+
+// Get user house logo if logged in
+$houseLogo = null;
+if (isLoggedIn() && isset($_SESSION['house_logo'])) {
+    $houseLogo = $_SESSION['house_logo'];
+} elseif (isLoggedIn()) {
+    // Try to get from database
+    require_once __DIR__ . '/houses.php';
+    $userHouse = getUserHouse($_SESSION['user_id']);
+    if ($userHouse && isset(HOUSES[$userHouse])) {
+        $houseLogo = HOUSES[$userHouse]['logo'];
+        $_SESSION['house_logo'] = $houseLogo;
+        $_SESSION['house'] = $userHouse;
+    }
+}
 ?>
 <nav class="navbar navbar-expand-lg navbar-light fixed-top" id="mainNav">
     <div class="container">
-        <a class="navbar-brand" href="index.php">
+        <a class="navbar-brand" href="<?php echo getNavPath('index.php'); ?>">
+            <?php if ($houseLogo): ?>
+                <span style="font-size: 1.5rem; margin-right: 8px;"><?php echo $houseLogo; ?></span>
+            <?php endif; ?>
             <i class="fas fa-tools"></i> fixIT
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -13,29 +43,33 @@
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ms-auto" id="navMenu">
                 <?php if (!isLoggedIn()): ?>
-                    <li class="nav-item"><a class="nav-link" href="index.php">Home</a></li>
-                    <li class="nav-item"><a class="nav-link" href="about.php">About Us</a></li>
-                    <li class="nav-item"><a class="nav-link" href="contact.php">Contact Us</a></li>
-                    <li class="nav-item"><a class="nav-link" href="blog.php">Make Your City Better</a></li>
+                    <li class="nav-item"><a class="nav-link" href="<?php echo getNavPath('index.php'); ?>">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="<?php echo getNavPath('about.php'); ?>">About Us</a></li>
+                    <li class="nav-item"><a class="nav-link" href="<?php echo getNavPath('contact.php'); ?>">Contact Us</a></li>
+                    <li class="nav-item"><a class="nav-link" href="<?php echo getNavPath('blog.php'); ?>">Make Your City Better</a></li>
                     <li class="nav-item"><a class="nav-link" href="#" onclick="openLoginModal(); return false;">Login</a></li>
                     <li class="nav-item"><a class="nav-link" href="#" onclick="openSignupModal(); return false;">Sign Up</a></li>
                 <?php elseif (isAdmin()): ?>
                     <!-- Admin Navbar -->
-                    <li class="nav-item"><a class="nav-link" href="index.php">Home (Map)</a></li>
-                    <li class="nav-item"><a class="nav-link" href="admin/dashboard.php">Admin Dashboard</a></li>
-                    <li class="nav-item"><a class="nav-link" href="manage_users.php">Manage Users</a></li>
-                    <li class="nav-item"><a class="nav-link" href="blog.php">Make Your City Better</a></li>
-                    <li class="nav-item"><a class="nav-link" href="notifications.php">Notifications</a></li>
-                    <li class="nav-item"><a class="nav-link" href="profile.php">Profile</a></li>
+                    <li class="nav-item"><a class="nav-link" href="<?php echo getNavPath('index.php'); ?>">Home (Map)</a></li>
+                    <?php if ($isAdminDir): ?>
+                        <li class="nav-item"><a class="nav-link" href="dashboard.php">Admin Dashboard</a></li>
+                    <?php else: ?>
+                        <li class="nav-item"><a class="nav-link" href="admin/dashboard.php">Admin Dashboard</a></li>
+                    <?php endif; ?>
+                    <li class="nav-item"><a class="nav-link" href="<?php echo getNavPath('manage_users.php'); ?>">Manage Users</a></li>
+                    <li class="nav-item"><a class="nav-link" href="<?php echo getNavPath('blog.php'); ?>">Make Your City Better</a></li>
+                    <li class="nav-item"><a class="nav-link" href="<?php echo getNavPath('notifications.php'); ?>">Notifications</a></li>
+                    <li class="nav-item"><a class="nav-link" href="<?php echo getNavPath('profile.php'); ?>">Profile</a></li>
                     <li class="nav-item"><a class="nav-link" href="#" onclick="logout(); return false;">Logout</a></li>
                 <?php else: ?>
                     <!-- User Navbar -->
-                    <li class="nav-item"><a class="nav-link" href="index.php">Home (Map)</a></li>
-                    <li class="nav-item"><a class="nav-link" href="report.php">Report an Issue</a></li>
-                    <li class="nav-item"><a class="nav-link" href="blog.php">Make Your City Better</a></li>
-                    <li class="nav-item"><a class="nav-link" href="my-reports.php">My Reports</a></li>
-                    <li class="nav-item"><a class="nav-link" href="notifications.php">Notifications</a></li>
-                    <li class="nav-item"><a class="nav-link" href="profile.php">Profile</a></li>
+                    <li class="nav-item"><a class="nav-link" href="<?php echo getNavPath('index.php'); ?>">Home (Map)</a></li>
+                    <li class="nav-item"><a class="nav-link" href="<?php echo getNavPath('report.php'); ?>">Report an Issue</a></li>
+                    <li class="nav-item"><a class="nav-link" href="<?php echo getNavPath('blog.php'); ?>">Make Your City Better</a></li>
+                    <li class="nav-item"><a class="nav-link" href="<?php echo getNavPath('my-reports.php'); ?>">My Reports</a></li>
+                    <li class="nav-item"><a class="nav-link" href="<?php echo getNavPath('notifications.php'); ?>">Notifications</a></li>
+                    <li class="nav-item"><a class="nav-link" href="<?php echo getNavPath('profile.php'); ?>">Profile</a></li>
                     <li class="nav-item"><a class="nav-link" href="#" onclick="logout(); return false;">Logout</a></li>
                 <?php endif; ?>
             </ul>

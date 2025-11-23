@@ -1,6 +1,10 @@
 // fixIT - Main JavaScript
 
-const API_BASE = 'api/';
+// Detect API base path based on current directory
+// If we're in admin/ subdirectory, we need ../api/
+const currentPath = window.location.pathname;
+const isAdminPage = currentPath.includes('/admin/');
+const API_BASE = isAdminPage ? '../api/' : 'api/';
 
 // City data
 const citiesByState = {
@@ -217,10 +221,15 @@ async function logout() {
         const data = await response.json();
         
         if (data.success) {
-            window.location.reload();
+            // Redirect to home page after logout
+            const homePath = isAdminPage ? '../index.php' : 'index.php';
+            window.location.href = homePath;
+        } else {
+            showAlert('Logout failed. Please try again.', 'error');
         }
     } catch (error) {
         console.error('Logout error:', error);
+        showAlert('An error occurred during logout.', 'error');
     }
 }
 
