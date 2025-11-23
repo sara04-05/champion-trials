@@ -95,10 +95,7 @@ $lng = $_GET['lng'] ?? null;
                         
                         <div id="duplicateWarning" class="alert alert-warning" style="display: none;"></div>
                         
-                        <div id="categoryPreview" class="alert alert-info" style="display: none;">
-                            <strong>Detected Category:</strong> <span id="detectedCategory"></span>
-                            <br><strong>Estimated Fix Time:</strong> <span id="estimatedFixTime"></span> days
-                        </div>
+                        
                         
                         <button type="submit" class="btn btn-primary btn-block">Submit Report</button>
                     </form>
