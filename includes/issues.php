@@ -76,7 +76,7 @@ function checkDuplicateIssue($latitude, $longitude, $radiusKm = 0.1) {
 }
 
 // Report new issue
-function reportIssue($userId, $title, $description, $latitude, $longitude, $state, $city, $category = null) {
+function reportIssue($userId, $title, $description, $latitude, $longitude, $state, $city, $category = null, $urgency = null) {
     $conn = getDBConnection();
     
     // Auto-categorize if not provided
@@ -84,8 +84,10 @@ function reportIssue($userId, $title, $description, $latitude, $longitude, $stat
         $category = categorizeIssue($description);
     }
     
-    // Determine urgency
-    $urgency = determineUrgency($description, $category);
+    // Use provided urgency, or determine automatically if not provided
+    if (!$urgency || !in_array($urgency, ['low', 'medium', 'high'])) {
+        $urgency = determineUrgency($description, $category);
+    }
     
     // Get estimated fix days
     $fixDays = ISSUE_CATEGORIES[$category]['fix_days'];
@@ -252,15 +254,52 @@ function getIssueById($issueId) {
     return $issue;
 }
 
+// Create notification
+function createNotification($userId, $title, $message, $type = null) {
+    $conn = getDBConnection();
+    
+    $stmt = $conn->prepare("INSERT INTO notifications (user_id, title, message, type) VALUES (?, ?, ?, ?)");
+    $stmt->bind_param("isss", $userId, $title, $message, $type);
+    
+    $success = $stmt->execute();
+    $stmt->close();
+    $conn->close();
+    
+    return $success;
+}
+
 // Update issue status
 function updateIssueStatus($issueId, $status, $assignedWorkerId = null) {
     $conn = getDBConnection();
     
+    // Get issue details
+    $stmt = $conn->prepare("SELECT user_id, title FROM issues WHERE id = ?");
+    $stmt->bind_param("i", $issueId);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $issue = $result->fetch_assoc();
+    $stmt->close();
+    
+    if (!$issue) {
+        $conn->close();
+        return false;
+    }
+    
+    // Update status
     $stmt = $conn->prepare("UPDATE issues SET status = ?, assigned_worker_id = ? WHERE id = ?");
     $stmt->bind_param("sii", $status, $assignedWorkerId, $issueId);
     
     $success = $stmt->execute();
     $stmt->close();
+    
+    // Create notification for issue reporter
+    if ($success) {
+        $statusText = ucfirst(str_replace('_', ' ', $status));
+        $title = "Issue Status Updated";
+        $message = "Your issue \"{$issue['title']}\" (Issue #{$issueId}) status has been updated to: {$statusText}";
+        createNotification($issue['user_id'], $title, $message, "issue_status");
+    }
+    
     $conn->close();
     
     return $success;

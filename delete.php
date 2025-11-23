@@ -1,19 +1,23 @@
-<<?php
-require_once 'config/config.php';
-require_once 'includes/auth.php';
-require_once 'config/database.php';
+<?php
+require_once __DIR__ . '/config/config.php';
+require_once __DIR__ . '/includes/auth.php';
+require_once __DIR__ . '/config/database.php';
 
 if (!isAdmin()) {
-    header('Location: ../index.php');
-    exit;
+    redirect('index.php');
 }
 
 if (!isset($_GET['id'])) {
-    header('Location: manage-users.php');
-    exit;
+    redirect('manage_users.php');
 }
 
 $id = (int)$_GET['id'];
+
+// Prevent deleting yourself
+if ($id === $_SESSION['user_id']) {
+    $_SESSION['error'] = "You cannot delete your own account.";
+    redirect('manage_users.php');
+}
 
 $conn = getDBConnection();
 
@@ -22,11 +26,12 @@ $stmt = $conn->prepare($sql);
 $stmt->bind_param("i", $id);
 
 if ($stmt->execute()) {
+    $stmt->close();
     $conn->close();
-    header('Location: manage-users.php?deleted=1');
+    redirect('manage_users.php?deleted=1');
 } else {
+    $stmt->close();
     $conn->close();
-    header('Location: manage-users.php');
+    $_SESSION['error'] = "Failed to delete user.";
+    redirect('manage_users.php');
 }
-exit;
-?>

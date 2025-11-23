@@ -25,7 +25,12 @@ switch ($method) {
         } elseif ($action === 'login') {
             $data = json_decode(file_get_contents('php://input'), true);
             
-            $result = loginUser($data['username'], $data['password']);
+            $result = loginUser(
+                $data['username'], 
+                $data['password'],
+                $data['state'] ?? null,
+                $data['city'] ?? null
+            );
             echo json_encode($result);
         } elseif ($action === 'logout') {
             logoutUser();

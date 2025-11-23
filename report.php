@@ -21,29 +21,11 @@ $lng = $_GET['lng'] ?? null;
 
     <style>
         body {
-            background: linear-gradient(135deg, #000000 0%, #1a1a2e 50%, #000000 100%);
-            position: relative;
+            background-color: var(--bg-primary);
             min-height: 100vh;
             margin: 0;
-            color: #ffffff;
-            overflow-x: hidden;
+            color: var(--text-primary);
         }
-
-        /* ONLY soft neon radial glows — NO diagonal lines, NO rotating effects */
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            background:
-                radial-gradient(circle at 20% 30%, rgba(0, 255, 0, 0.12) 0%, transparent 40%),
-                radial-gradient(circle at 80% 70%, rgba(0, 0, 255, 0.10) 0%, transparent 40%),
-                radial-gradient(circle at 50% 50%, rgba(255, 0, 0, 0.08) 0%, transparent 40%);
-            pointer-events: none;
-            z-index: -1;
-        }
-
-        
     </style>
 </head>
 <body>
@@ -92,6 +74,17 @@ $lng = $_GET['lng'] ?? null;
                         <div class="form-group">
                             <label>City</label>
                             <input type="text" id="issueCity" class="form-control" value="<?php echo htmlspecialchars($_SESSION['city'] ?? ''); ?>" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Urgency Level</label>
+                            <select id="issueUrgency" class="form-control" required>
+                                <option value="">Select Urgency</option>
+                                <option value="low">Low</option>
+                                <option value="medium">Medium</option>
+                                <option value="high">High</option>
+                            </select>
+                            <small class="text-muted">Select the urgency level of this issue</small>
                         </div>
                         
                         <div class="form-group">
@@ -159,7 +152,8 @@ $lng = $_GET['lng'] ?? null;
                 latitude: parseFloat(document.getElementById('issueLat').value),
                 longitude: parseFloat(document.getElementById('issueLng').value),
                 state: document.getElementById('issueState').value,
-                city: document.getElementById('issueCity').value
+                city: document.getElementById('issueCity').value,
+                urgency: document.getElementById('issueUrgency').value
             };
 
             try {

@@ -56,7 +56,8 @@ switch ($method) {
                 $data['longitude'],
                 sanitize($data['state']),
                 sanitize($data['city']),
-                $data['category'] ?? null
+                $data['category'] ?? null,
+                $data['urgency'] ?? null
             );
             
             echo json_encode($result);

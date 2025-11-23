@@ -45,7 +45,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $error = "All fields are required.";
     } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $error = "Invalid email address.";
-    } elseif (!in_array($role, ['user', 'admin'])) {
+    } elseif (!in_array($role, ['regular_user', 'admin', 'engineer', 'safety_inspector', 'environmental_officer', 'construction_worker', 'doctor'])) {
         $error = "Invalid role.";
     } else {
         // Kontrollo nëse emaili ekziston te dikush tjetër
@@ -58,13 +58,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
         $check->close();
 
+        $username = trim($_POST['username'] ?? $user['username']);
+        $state = trim($_POST['state'] ?? '');
+        $city = trim($_POST['city'] ?? '');
+        
+        // Check if username exists for another user
+        $checkUsername = $conn->prepare("SELECT id FROM users WHERE username = ? AND id != ?");
+        $checkUsername->bind_param("si", $username, $userId);
+        $checkUsername->execute();
+        $checkUsername->store_result();
+        if ($checkUsername->num_rows > 0) {
+            $error = "This username is already used by another account.";
+        }
+        $checkUsername->close();
+        
         if (!isset($error)) {
-            $update = $conn->prepare("UPDATE users SET name = ?, surname = ?, email = ?, role = ? WHERE id = ?");
-            $update->bind_param("ssssi", $name, $surname, $email, $role, $userId);
+            $update = $conn->prepare("UPDATE users SET name = ?, surname = ?, email = ?, role = ?, username = ?, state = ?, city = ? WHERE id = ?");
+            $update->bind_param("sssssssi", $name, $surname, $email, $role, $username, $state, $city, $userId);
 
             if ($update->execute()) {
                 $_SESSION['success'] = "User updated successfully!";
-                header("Location: edit_user.php?id=$userId"); // rifresko faqen
+                header("Location: manage_users.php?updated=1");
                 exit();
             } else {
                 $error = "Database error. Try again.";
@@ -131,9 +145,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <div class="mb-3">
             <label class="form-label">Role</label>
             <select name="role" class="form-control" required>
-                <option value="user" <?= $user['role'] === 'user' ? 'selected' : '' ?>>User</option>
+                <option value="regular_user" <?= $user['role'] === 'regular_user' ? 'selected' : '' ?>>Regular User</option>
                 <option value="admin" <?= $user['role'] === 'admin' ? 'selected' : '' ?>>Admin</option>
+                <option value="engineer" <?= $user['role'] === 'engineer' ? 'selected' : '' ?>>Engineer</option>
+                <option value="safety_inspector" <?= $user['role'] === 'safety_inspector' ? 'selected' : '' ?>>Safety Inspector</option>
+                <option value="environmental_officer" <?= $user['role'] === 'environmental_officer' ? 'selected' : '' ?>>Environmental Officer</option>
+                <option value="construction_worker" <?= $user['role'] === 'construction_worker' ? 'selected' : '' ?>>Construction Worker</option>
+                <option value="doctor" <?= $user['role'] === 'doctor' ? 'selected' : '' ?>>Doctor</option>
             </select>
+        </div>
+        
+        <div class="mb-3">
+            <label class="form-label">Username</label>
+            <input type="text" name="username" class="form-control" value="<?= htmlspecialchars($user['username']) ?>" required>
+        </div>
+        
+        <div class="mb-3">
+            <label class="form-label">State</label>
+            <input type="text" name="state" class="form-control" value="<?= htmlspecialchars($user['state'] ?? '') ?>">
+        </div>
+        
+        <div class="mb-3">
+            <label class="form-label">City</label>
+            <input type="text" name="city" class="form-control" value="<?= htmlspecialchars($user['city'] ?? '') ?>">
         </div>
 
         <div class="d-grid gap-2 d-md-flex justify-content-md-end">
