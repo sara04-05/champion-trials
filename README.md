@@ -239,9 +239,7 @@ This project is open source and available for educational purposes.
 
 ## Support
 
-For issues or questions, please check the code comments or create an issue in the repository.
 
 ---
 
-**Built with ❤️ for better cities**
 
